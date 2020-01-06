@@ -12,7 +12,7 @@ RUN apt-get update \
 # install stuff
 ENV TMPDIR /tmp
 RUN cd /opt \
-  && git clone https://github.com/droe-nmdp/kpi.git \
+  && git clone https://github.com/droeatumn/KPI.git \
   && mkdir -p /opt/kpi/raw /opt/bin \
   && cd /opt/bin \
   && wget -qO- http://get.nextflow.io | bash \
