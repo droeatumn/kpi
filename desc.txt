@@ -1,0 +1,43 @@
+Predict a pair of KIR structural haplotypes given raw short or long reads.
+
+Input
+There are two input options.
+1. An ID along with a folder of fasta or fastq files, optionally gzipped.
+2. A two-column text file, where the first column is an ID, and the second column is a fully-qualified path to a fasta or fastq file. Each ID may have multiple rows
+
+Option 1 is more efficient with respect to disk space.
+
+Output
+For each input ID, an output text file will be created named '<id>_prediction.txt'. Each ID's output file contains three columns: column one is the ID, column two is the gene presence/absence genotype, and column three is the haplotype pair predictions.
+Each value in the genotype is separated with a '+'. Each haplotype within a pair is separated by a '+'. If the prediction is ambiguous, each pair of haplotypes is separated by '|'.
+    e.g., 'cA01~tA01+cB03~tA01_2DL3|cA01~tA01+cB03~tA01_2DL2' means haplotype 'cA01~tA01 and cB03~tA01_2DL3' or 'cA01~tA01 and cB03~tA01_2DL2'.
+The reference haplotypes are defined at https://github.com/droe-nmdp/kpi/blob/master/input/all_haps_v6.txt
+
+Running
+Run KPI with the following command. Replace '<inDir>' with the path to the input files. Replace '<outDir>' with the path where the output files should be placed.
+
+Option 1: ID with fastqs in folder 'id1Dir'
+    docker run --rm -it -v <inDir>:/opt/kpi/raw/ -v <outDir>:/opt/kpi/output/ droeatnmdp/kpi:latest main.nf --p /opt/kpi/raw/id1Dir --id id1
+
+Option 2: text file with IDs and paths to fastq files
+    docker run --rm -it -v <inDir>:/opt/kpi/raw/ -v <outDir>:/opt/kpi/output/ droeatnmdp/kpi:latest main.nf --m /opt/kpi/raw/ids.txt
+
+Example 1: cA01~tA01+cB01~tB01 with --p
+Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes, so the haplotype predictions are very ambiguous.
+
+    docker run --rm -it -v <outDir>:/opt/kpi/output/ droeatnmdp/kpi:latest main.nf --p /opt/kpi/input/example1/ --id example1
+
+Example 2: cA01~tA01+cA01~tB01 with --m
+Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197).
+
+    docker run --rm -it -v <outDir>:/opt/kpi/output/ droeatnmdp/kpi:latest main.nf --m /opt/kpi/input/example2/example2.txt
+
+Example 3: example 1 and example 2 with --m in the same file
+Run example 1 and example 2 from one input map file. It will create example1_prediction.txt and example2_prediction.txt.
+    docker run --rm -it -v <outDir>:/opt/kpi/output/ droeatnmdp/kpi:latest main.nf --m /opt/kpi/input/example1-2.txt
+
+Hardware
+For targeted sequencing, KPI requires at least 5G RAM total and 1G temp disk space/ID. For WGS, it requires 25G RAM total and 15G temp disk space/ID. It will scale to the number of CPUs available, with 6-12 being most efficient in general.
+
+Reference
+A manuscript is under preparation.

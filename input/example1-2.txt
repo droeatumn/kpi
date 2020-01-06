@@ -1,0 +1,8 @@
+example1	/opt/kpi/input/example1/KP420439_paired1.bwa.read1.fastq.gz
+example1	/opt/kpi/input/example1/KP420439_paired1.bwa.read2.fastq.gz
+example1	/opt/kpi/input/example1/KP420440_paired1.bwa.read1.fastq.gz
+example1	/opt/kpi/input/example1/KP420440_paired1.bwa.read2.fastq.gz
+example2	/opt/kpi/input/example2/KP420439_paired1.bwa.read1.fastq.gz
+example2	/opt/kpi/input/example2/KP420439_paired1.bwa.read2.fastq.gz
+example2	/opt/kpi/input/example2/KU645197_paired1.bwa.read1.fastq.gz
+example2	/opt/kpi/input/example2/KU645197_paired1.bwa.read2.fastq.gz
