@@ -18,7 +18,7 @@ The reference haplotypes are defined at https://github.com/droeatumn/kpi/blob/ma
 Run kpi with the following command. Replace '<inDir>' with the path to the input files. Replace '<outDir>' with the path where the output files should be placed.
 
 Option 1: ID with fastqs in folder '/tmp/id1Dir'<br>
-<code>    docker run --rm -it -v /tmp/id1Dir:/opt/kpi/input/ -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --p /opt/kpi/input/id1Dir --id id1</code>
+<code>    docker run --rm -it -v<inDir>:/opt/kpi/input/ -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --p /opt/kpi/input/id1Dir --id id1</code>
 
 Option 2: text file with IDs and paths to their fastq files in '/tmp/ids.txt'<br>
 <code>    docker run --rm -it -v /tmp/:/opt/kpi/input/ -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/input/ids.txt </code>
