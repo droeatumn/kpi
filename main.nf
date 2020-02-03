@@ -28,15 +28,15 @@ nfKMCForks = 1 // run this many input text files in parallel
 params.p = '/opt/kpi/raw/'
 params.output = '/opt/kpi/output'
 params.id = 'defaultID'
-geneProbes  = '/opt/kpi/input/markers_v5'
+geneProbes  = '/opt/kpi/input/markers'
 nfForks = 4 // run this many input text files in parallel
 // input: kmc probe txt files
 kmcNameSuffix = '_hits.txt'          // extension on the file name
 bin1Suffix = 'bin1'
-probeFile = '/opt/kpi/input/markers_v5.fasta'
-params.haps = '/opt/kpi/input/all_haps_v7.txt'
+probeFile = '/opt/kpi/input/markers.fasta'
+params.haps = '/opt/kpi/input/haps.txt'
 params.m = null
-workflow.onComplete { file('work').deleteDir() }
+//workflow.onComplete { file('work').deleteDir() }
 
 // things that probably won't change per run
 resultDir = params.output
