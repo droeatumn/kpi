@@ -65,7 +65,7 @@ fqsIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find anything in $mapDi
 process probeFastqs {
 	//container = "droeatnmdp/kpi:latest"
 	//publishDir resultDir, mode: 'copy', overwrite: true
-    maxForks 1
+//    maxForks 1
 	
 	input: file(f) from fqsIn
 	output:
