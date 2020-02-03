@@ -27,21 +27,23 @@ import com.google.common.collect.Table
 import com.google.common.collect.HashBasedTable
 
 // things that may change per run
-debugging = 3 // TRACE=1, DEBUG=2, INFO=3
+debugging = 4 // TRACE=1, DEBUG=2, INFO=3
 // for all_haps_v6.xlsx, loci start at column index 5
-// haplotype	nomenclature	freq	structure	hap markers	3DL3
-Integer startLocusIndex = 5
+// haplotype	nomenclature	freq	structure	3DL3
+Integer startLocusIndex = 4
 
 // thing that probably won't change per run
 err = System.err
+ArrayList<String> loci = ["3DL3", "2DS2", "2DL2", "2DL3", "2DP1", "2DL1", "3DP1", "2DL4", "3DL1", "3DS1", "2DL5", "2DS3", "2DS5", "2DS4", "2DS1", "3DL2"]
+
 // can call absent, but no present
-HashSet<String> absentOnlyRefLociSet = new HashSet(Arrays.asList('2DS1', '2DS2', '2DS3S5A-2DS1'))
+HashSet<String> absentOnlyRefLociSet = new HashSet()
 // these two haplotypes have present/absent markers
 HashSet<String> refHapLociSet = new HashSet(Arrays.asList())
-HashSet<String> absentOnlyRefHapLociSet = new HashSet(Arrays.asList('cB02~tB01', 'cA01~tB01', 'cB01~tA01', 'cB01~tB01', 'cB02~tA01', 'cA01~tA01', 'cA01~tA02'))
+HashSet<String> absentOnlyRefHapLociSet = new HashSet()
+//HashSet<String> absentOnlyRefHapLociSet = new HashSet(Arrays.asList('cB02~tB01', 'cA01~tB01', 'cB01~tA01', 'cB01~tB01', 'cB02~tA01', 'cA01~tA01', 'cA01~tA02'))
 // not relevant for locus determination
-HashSet<String> alleleSet = new HashSet(Arrays.asList('2DS3', '2DS5'))
-
+//HashSet<String> alleleSet = new HashSet(Arrays.asList('2DS3', '2DS5'))
 OptionAccessor options = handleArgs(args)
 
 if(debugging <= 3) {
@@ -98,7 +100,10 @@ interpPAMap = interpret(paHapPairTable, genPAMap, false)
 
 //// now narrow the results by the absent-only loci
 interpAbsMap = interpret(absHapPairTable, genPAMap, true)
-nonHapPredictionSet = interpPAMap.keySet().intersect(interpAbsMap.keySet()) // ~
+HashSet<String> nonHapPredictionSet = interpPAMap.keySet()
+if((interpAbsMap != null) && (interpAbsMap.size() > 0)) {
+    nonHapPredictionSet = interpPAMap.keySet().intersect(interpAbsMap.keySet()) // ~
+}
 if(debugging <= 3) { 
     err.println "abs" + interpAbsMap.keySet()
     err.println "first ${interpPAMap.keySet().size()} PA marker interpretation(s) " +
@@ -110,11 +115,13 @@ if(debugging <= 3) {
 // make hap pair predictions from haplotype probe hits
 HashSet<String> interpHapSet = null
 interpHapSet = interpretHapMarkers(genHitSet, nomenclatureMap.values().toSet())
-err.println "${interpHapSet.size()} haplotype marker interpretation(s)"
+if(debugging <= 3) { 
+    err.println "${interpHapSet.size()} haplotype marker interpretation(s)"
+}
 
 writeOutput(options, genPAMap, genHitSet, nonHapPredictionSet,
             interpHapSet, refHapLociSet, absHapPairTable, absentOnlyRefLociSet,
-            absentOnlyRefHapLociSet, paHapPairTable, alleleSet)
+            absentOnlyRefHapLociSet, paHapPairTable, loci)
 
 // end main
 
@@ -132,7 +139,6 @@ writeOutput(options, genPAMap, genHitSet, nonHapPredictionSet,
  * @param paHapPairTable Table<hap number, locus names, gene count>
  * @param refHapLociSet HashSet<String> of the reference haplotypes that are tested
  * @param absHapPairTable Table of hap pair names and loci to gene counts
- * @param alleleSet Set of Strings of alleles to be genotyped; e.g., 2DS3 and 2DS5
  *
  */
 def void writeOutput(OptionAccessor options, Map genPAMap,
@@ -143,32 +149,33 @@ def void writeOutput(OptionAccessor options, Map genPAMap,
                      HashSet<String> absentOnlyRefLociSet,
                      HashSet<String> absentOnlyRefHapLociSet,
                      HashBasedTable<String, String, Boolean> paHapPairTable,
-                     HashSet<String> alleleSet) {
+                     ArrayList<String> loci) {
     if(debugging <= 1) {
         err.println "writeOutput(interpPASet=${interpPASet}, interpHapSet=${interpHapSet})"
     }
     String outFileName = options.o
     // open output file
     outWriter = new PrintWriter(new File(outFileName).newOutputStream(), true)
-    id = outFileName.replaceFirst("_prediction.txt", "")
-	//outWriter.println "id: $id"
+    // output header
+    header = "id\thaplotypes"
+    loci.each { locus ->
+        header += "\t${locus}"
+    }
+    outWriter.println header
+
+    startIdx = outFileName.indexOf(System.getProperty('file.separator')) + 1
+    if(startIdx < 0) {
+        startIdx = 0
+    }
+    endIdx = outFileName.indexOf("_") - 1
+    if(endIdx < 0) {
+        endIdx = outFileName.length() - 1
+    }
+    id = outFileName[startIdx..endIdx]
+    //id = outFileName.replaceFirst("_prediction.txt", "")
 	
     // output genotypes
-    //outWriter.println genPAMap
-	//geneHitSet = genHitSet
-	//intergeneHitSet = genHitSet.collect{ it.contains("-") ? it : null}.findAll()
     TreeSet<String> intergeneHitSet = new TreeSet()
-//    outWriter.println "genes and haplotypes: " + geneHitSet.sort().join("+")
-
-/*    // assume homozygous if only one hap call
-    // (interpHapSet.iterator()[0] == "1")
-    if(interpHapSet.size() == 1) { // make homozygous
-        val = interpHapSet.iterator()[0]
-        val += "+${val}"
-        interpHapSet = new HashSet(1)
-        interpHapSet.add(val)
-    }
-*/
 
     // todo: move this before writeOutput?
     HashSet<String> pacombinedSet = paReduceByHap(genHitSet,
@@ -177,35 +184,9 @@ def void writeOutput(OptionAccessor options, Map genPAMap,
                                                   absHapPairTable,
                                                   absentOnlyRefLociSet,
                                                   absentOnlyRefHapLociSet)
-/*    HashSet<String> hapcombinedSet = hapReduceByPA(genHitSet,
-												   interpPASet,
-												   interpHapSet)
-*/
 	if(debugging <= 3) {
 		err.println "haplotype-reduced gene interp from ${interpPASet.size()} to ${pacombinedSet.size()}"
-//		err.println "gene-reduced hap interp from ${interpPASet.size()} to ${hapcombinedSet.size()}"
-	}
-//	outWriter.println "haplotype reduced: ${pacombinedSet.size()}"
-
-	// get the best call for the combined prediction
-	// best to worst: gene+hap, inter-gene reduced, gene only, hap only
-/*	if((pacombinedSet.size() == 0) && (hapcombinedSet.size() == 0)) {
-		// first, take the inter-gene reduced
-		if(interpPASet.size() > 0) {
-			pacombinedSet = interpPASet
-		} else if(interpPASet.size() > 0) {
-			pacombinedSet = interpPASet
-		} else if(interpHapSet.size() > 0) {
-			pacombinedSet = interpHapSet
-		} 
-	}
-    // get least ambig between pa and hap-based interp
-    leastAmbigSet = pacombinedSet
-    if(hapcombinedSet.size() < pacombinedSet.size()) {
-        leastAmbigSet = hapcombinedSet
-    }
-*/
-    
+	}    
 	if(debugging <= 2) {
         err.println "${pacombinedSet.size()} combined predictions"
 		err.println "genotype: " + genHitSet.sort().join("+")
@@ -214,58 +195,29 @@ def void writeOutput(OptionAccessor options, Map genPAMap,
         err.println "pa combined: " + pacombinedSet.sort().join('|')
         err.println options.a
     }
-    //if((options.a != null) && (options.a != "0") && (options.a != false)) { 
-        //outWriter.println "${pacombinedSet.size()} pa combined predictions"
-    // output the genotypes (without the haplotypes)
-    // todo: what about the absent-only genes?
-        TreeSet outSet = genHitSet.collect()
-        outSet.removeAll { it.contains('~') }
-        outSet.removeAll { it.equals(id) }
-	    //outWriter.println "genotype: " + outSet.sort().join("+")
-    //}
-    HashSet<String> outGenotypeSet = new HashSet()
     if(pacombinedSet.size() == 0) {
         pacombinedSet.add("uninterpretable")
     } else {
         hapPair = pacombinedSet[0]
         locusMap = paHapPairTable.row(hapPair)
+        //todo print out locusMap?
         // this is isn't right; absent-only could be present or absent
         absLocusMap = absHapPairTable.row(hapPair) 
-        [locusMap, absLocusMap].each { lmap ->
-            lmap.each { locus, val ->
-                // don't output intergenes in genotype
-                if((val == true) && (!locus.contains('-'))) { 
-                    outGenotypeSet.add(locus)
-                }
-            }
-        }
         if(debugging <= 2) {
             err.println "writeOutput: hapPair=$hapPair"
             err.println "writeOutput: absent-only $hapPair = " + absHapPairTable.row(hapPair)
             err.println "writeOutput: absLocusMap = " + absLocusMap
-            err.println "writeOutput: outGenotypeSet = " + outGenotypeSet.sort().join("+")
         }
     }
 
-    //outStr = "${id}\t${outGenotypeSet.sort().join("+")}\t${pacombinedSet.sort().sort().join('|')}"
     outStr = "${id}\t${pacombinedSet.sort().sort().join('|')}"
 
-    // output the alleles that hit in column 2
-    alleleStr = ""
-    alleleSet.each { allele ->
-        if(genHitSet.contains(allele)) {
-            if(alleleStr != "") {
-                alleleStr += ","
-            }
-            alleleStr += allele
-        }
+    locusMap = paHapPairTable.row(hapPair)
+    loci.each { locus ->
+        genePA = locusMap[locus] ?  "Y" : "N"
+        outStr += "\t${genePA}"
     }
-    outStr += "\t${alleleStr}"
     
-    // if -a is set, output the original genotypes in the last columnn
-    if((options.a != null) && (options.a != "0") && (options.a != false)) {
-        outStr += "\t" + genHitSet.sort().join("+")
-    }
     outWriter.println outStr
 	outWriter.close()
 	if(debugging <= 1) {
@@ -381,7 +333,8 @@ HashSet<String> paReduceByHap(Set genHitSet,
             err.println "paReduceByHap: evaluating pa pair ${paPair}"
         }
         // for this PA hap pair prediction, score how it fits the ref haps
-        score = 0 
+        score = 0
+        // todo: loop through absentOnlyRefHapLociSet and eliminate that way?
         paPair.split("\\+").each { paHap ->
             interpPASingleHapsSet.add(paHap)
             //paHapNoTilde = paHap.replaceFirst('~', '-')
@@ -608,6 +561,7 @@ def List readReferenceHaplotypes(Set absentOnlyRefLociSet,
         freqMap[haplotype] = cols[2].toFloat()
         //old nomenclatureMap[haplotype] = cols[1]
         nomenclatureMap[cols[1]] = haplotype // new
+        // the loci are from here to the end
         cols[startLocusIndex..-1].eachWithIndex { cell, i ->
             i+=+startLocusIndex
             Boolean genePresent = false
@@ -928,6 +882,7 @@ def log1(Table paHapPairTable, Table absHapPairTable,
         err.println "${absHapPairTable.rowKeySet().size()} reference abs haplotypes, "
         err.println "${paHapPairTable.rowKeySet().size()} reference pa haplotype pairs"
         err.println "${absHapPairTable.rowKeySet().size()} reference abs haplotype pairs"
+        err.println "pa haplotypes loci " + paHapPairTable.columnKeySet()
     }
 } // log1
 
