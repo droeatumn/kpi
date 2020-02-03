@@ -19,8 +19,8 @@ kmcNameSuffix = '_hits.txt'          // extension on the file name
 params.input = '/Users/daver/gonl/results_v7/hits_test/'
 bin1Suffix = 'bin1'
 params.output = '/Users/daver/gonl/results_v7/predictions_test/'
-probeFile = '/Users/daver/git/kpi/input/markers_v5.fasta'
-haps = '/Users/daver/git/kpi/input/all_haps_v7.txt'
+probeFile = '/Users/daver/git/kpi/input/markers.fasta'
+haps = '/Users/daver/git/kpi/input/haps.txt'
 params.allOut = "0"
 
 // things that probably won't change per run
@@ -49,7 +49,7 @@ kmcs2 = Channel.fromPath(kmcPath).ifEmpty { error "cannot find any ${kmcNameSuff
  */
 process kmc2locusBin {
 //  publishDir resultDir, mode: 'copy', overwrite: true
-  maxForks nfForks
+//  maxForks nfForks
 
   input:
     set s, file(kmc) from kmcs1
