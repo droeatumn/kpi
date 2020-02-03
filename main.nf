@@ -46,12 +46,12 @@ if(!resultDir.trim().endsWith("/")) {
 }
 probeCmd = ""
 mapDir = ""
-if(params.p != null) {
-    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} -o . -w ."
-    mapDir - params.p
-} else if(params.m != null) {
+if(params.m != null) {
     probeCmd = "probeFastqsKMC.groovy -m ${params.m} -o . -w ."
     mapDir - params.m
+} else if(params.p != null) {
+    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} -o . -w ."
+    mapDir - params.p
 }
 if(!mapDir.trim().endsWith("/")) {
 	mapDir += "/"
