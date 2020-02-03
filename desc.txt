@@ -3,40 +3,40 @@ Predict a pair of KIR structural haplotypes given raw short or long reads.
 <b>Input</b> <br>
 There are two input options.
 1. An ID along with a folder of fasta or fastq files, optionally gzipped.
-2. A two-column text file, where the first column is an ID, and the second column is a fully-qualified internal-image path to a fasta or fastq file. Each ID may have multiple rows. The paths in the file must start with '/opt/kpi/input/' followed by your path to the files, relative to your mount point. For example, if your files are in /tmp/group1 and the input file system is mounted via "-v /tmp:/opt/kpi/input", then the paths in the files should be "/opt/kpi/input/group1/<filename>".
+2. A two-column text file, where the first column is an ID, and the second column is a fully-qualified internal-image path to a fasta or fastq file. Each ID may have multiple rows. The paths in the file must start with '/opt/kpi/raw/' followed by your path to the files, relative to your mount point. For example, if your files are in /tmp/group1 and the input file system is mounted via "-v /tmp:/opt/kpi/raw", then the paths in the files should be "/opt/kpi/raw/group1/<filename>".
 
 Option 1 is more efficient with respect to disk space.
 
 <b>Output</b> <br>
-For each input ID, an output text file will be created named '<id>_prediction.txt'. Each ID's output file contains the haplotype pair predictions. <br>
+For each input ID, an output text file will be created named '<id>_prediction.txt'. Each ID's output file contains a header line and a second line with the haplotype pair predictions and gene predictions. <br>
 Each haplotype within a pair is separated by a '+'. If the prediction is ambiguous, each pair of haplotypes is separated by '|'.
     e.g., <br> 'cA01&tilde;tA01+cA01&tilde;tB01|cA01&tilde;tA01+cB05&tilde;tB01|cA01&tilde;tB01+cB05&tilde;tA01' means haplotype <br>'cA01&tilde;tA01 and cA01&tilde;tB01' or 'cA01&tilde;tA01 and cB05&tilde;tB01' or 'cA01&tilde;tB01 and cB05&tilde;tA01'.
 
-The reference haplotypes are defined at https://github.com/droeatumn/kpi/blob/master/input/all_haps_v6.txt
+The reference haplotypes are defined at https://github.com/droeatumn/kpi/blob/master/input/haps.txt
 
 <b>Running</b><br>
-Run kpi with the following command. Replace '<inDir>' with the path to the input files. Replace '<outDir>' with the path where the output files should be placed.
+Run kpi with the following command. Replace 'inDir' with the path to the input files. Replace 'outDir' with the path where the output files should be placed.
 
-Option 1: ID with fastqs in folder '/tmp/id1Dir'<br>
-<code>    docker run --rm -it -v<inDir>:/opt/kpi/input/ -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --p /opt/kpi/input/id1Dir --id id1</code>
+Option 1: One individual with fastqs in folder '/tmp/id1Dir'<br>
+<code>    docker run --rm -it -v /tmp/id1Dir:/opt/kpi/raw/ -v outDir:/opt/kpi/output/ droeatumn/kpi:latest main.nf --id id1</code>
 
 Option 2: text file with IDs and paths to their fastq files in '/tmp/ids.txt'<br>
-<code>    docker run --rm -it -v /tmp/:/opt/kpi/input/ -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/input/ids.txt </code>
+<code>    docker run --rm -it -v /tmp/:/opt/kpi/raw/ -v outDir:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/raw/ids.txt </code>
 
 <b>Examples using data in the image, so no input is required.</b><br>
 Example 1: cA01&tilde;tA01+cB01&tilde;tB01 with --p.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes, so the haplotype predictions are very ambiguous.
 
-<code>    docker run --rm -it -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --p /opt/kpi/input/example1/ --id example1 </code>
+<code>    docker run --rm -it -v outDir:/opt/kpi/output/ droeatumn/kpi:latest main.nf --p /opt/kpi/input/example1/ --id example1 </code>
 
 Example 2: cA01&tilde;tA01+cA01&tilde;tB01 with --m. <br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197).
 
-<code>    docker run --rm -it -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/input/example2/example2.txt </code>
+<code>    docker run --rm -it -v outDir:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/input/example2/example2.txt </code>
 
 Example 3: example 1 and example 2 with --m in the same file. <br>
 Run example 1 and example 2 from one input map file. It will create example1_prediction.txt and example2_prediction.txt.
-<code>    docker run --rm -it -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/input/example1-2.txt</code>
+<code>    docker run --rm -it -v outDir:/opt/kpi/output/ droeatumn/kpi:latest main.nf --m /opt/kpi/input/example1-2.txt</code>
 
 <b>Miscellaneous</b><br>
 Hardware
