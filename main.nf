@@ -24,21 +24,22 @@
  * @todo add logging output to all steps
  */
 
-inputSuffix = "txt"
-nfKMCForks = 1 // run this many input text files in parallel
-params.p = '/opt/kpi/raw/'
-params.output = '/opt/kpi/output'
+params.base = '/opt/kpi/'
+base = params.base + '/'
+params.p = base + 'raw/'
+params.output = base + 'output/'
 params.id = 'defaultID'
-geneProbes  = '/opt/kpi/input/markers'
+geneProbes  = base + 'input/markers'
 nfForks = 4 // run this many input text files in parallel
 // input: kmc probe txt files
 kmcNameSuffix = '_hits.txt'          // extension on the file name
 bin1Suffix = 'bin1'
-probeFile = '/opt/kpi/input/markers.fasta'
-params.haps = '/opt/kpi/input/haps.txt'
+probeFile = base + 'input/markers.fasta'
+params.haps = base + 'input/haps.txt'
 params.m = null
 params.l = null // logging level (1=most to 5=least)
-//workflow.onComplete { file('work').deleteDir() }
+inputSuffix = "txt"
+nfKMCForks = 1 // run this many input text files in parallel
 
 // things that probably won't change per run
 fileSeparator = "/"
@@ -49,9 +50,9 @@ if(!resultDir.trim().endsWith("/")) {
 }
 probeCmd = ""
 mapDir = ""
-logString = ""
+logIn = ""
 if(params.l != null) {
-    logStringIn = "-l ${params.l}"
+    logIn = "-l ${params.l}"
 }
 
 if(params.m != null) {
@@ -60,14 +61,14 @@ if(params.m != null) {
         mArray = params.m.split(fileSeparator)
         logOut = "2> " + mArray[-1].replaceFirst(".txt", "") + ".log"
     }
-    probeCmd = "probeFastqsKMC.groovy -m ${params.m} ${logStringIn} -o . -w . ${logOut}"
+    probeCmd = "probeFastqsKMC.groovy -m ${params.m} ${logIn} -o . -w . ${logOut}"
     mapDir - params.m
 } else if(params.p != null) {
     logOut = ""
     if(params.l != null) {
         logOut = "2> ${params.id}.log"
     }
-    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} ${logStringIn} -o . -w . ${logOut}"
+    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} ${logIn} -o . -w . ${logOut}"
     mapDir - params.p
 }
 if(!mapDir.trim().endsWith("/")) {
@@ -81,11 +82,12 @@ fqsIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find anything in $mapDi
  */ 
 process probeFastqs {
 	//container = "droeatnmdp/kpi:latest"
-	//publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
+	publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
+    errorStrategy 'ignore'
     
 	input: file(f) from fqsIn
 	output:
-      file('*.kmc_*') into kmcdb
+      file('*.kmc_*') optional true into kmcdb
       file('*.log') optional true into kmcdbLog
 	script:
 		"""
