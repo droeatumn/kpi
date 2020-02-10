@@ -21,7 +21,7 @@
  * on an 8 CPU computer with 20G memory.
  * 
  * @author Dave Roe
- * @todo add logging output to all steps
+ * @todo add logging output to all steps; # ./main.nf --m input/example2.txt --l 1
  */
 
 params.base = '/opt/kpi/'
@@ -84,6 +84,7 @@ process probeFastqs {
 	//container = "droeatnmdp/kpi:latest"
 	publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
     errorStrategy 'ignore'
+    validExitStatus 0,1
     
 	input: file(f) from fqsIn
 	output:
