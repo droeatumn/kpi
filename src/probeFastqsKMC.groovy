@@ -38,6 +38,9 @@ OptionAccessor options = handleArgs(args)
 if(debugging <= 4) {
     err.println "kmerSize=${kmerSize} minKmers=${minKmers}"
 }    
+if((options.l != null) && (options.l != "")) {
+    debugging = options.l
+}
 
 // make list of fastq files for every individual
 // d and f options go together
@@ -194,6 +197,8 @@ OptionAccessor handleArgs(String[] args) {
 		  argName:'id', 'id', required: false)
     cli.p(longOpt:'path to the sequences files', args:1,
 		  argName:'path', 'fastq path', required: false)
+    cli.l(longOpt:'log level, 1(most)-5(least)', args:1,
+		  argName:'logging', 'logging level', required: false)
     cli.o(longOpt:'directory to put the output', args:1, argName:'out', 
 		  'output directory', required: true)
     cli.w(longOpt:'work directory', args:1, argName:'work', 

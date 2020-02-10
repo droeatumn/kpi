@@ -21,6 +21,7 @@
  * on an 8 CPU computer with 20G memory.
  * 
  * @author Dave Roe
+ * @todo add logging output to all steps
  */
 
 inputSuffix = "txt"
@@ -36,9 +37,11 @@ bin1Suffix = 'bin1'
 probeFile = '/opt/kpi/input/markers.fasta'
 params.haps = '/opt/kpi/input/haps.txt'
 params.m = null
+params.l = null // logging level (1=most to 5=least)
 //workflow.onComplete { file('work').deleteDir() }
 
 // things that probably won't change per run
+fileSeparator = "/"
 resultDir = params.output
 haps = params.haps
 if(!resultDir.trim().endsWith("/")) {
@@ -46,11 +49,18 @@ if(!resultDir.trim().endsWith("/")) {
 }
 probeCmd = ""
 mapDir = ""
+logString = ""
+if(params.l != null) {
+    logStringIn = "-l ${params.l}"
+}
+
 if(params.m != null) {
-    probeCmd = "probeFastqsKMC.groovy -m ${params.m} -o . -w ."
+    mArray = params.m.split(fileSeparator)
+    mShort = mArray[-1].replaceFirst(".txt", "") + ".log"
+    probeCmd = "probeFastqsKMC.groovy -m ${params.m} ${logString} -o . -w . 2> ${mShort}"
     mapDir - params.m
 } else if(params.p != null) {
-    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} -o . -w ."
+    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} ${logString} -o . -w . 2> ${params.d}.log"
     mapDir - params.p
 }
 if(!mapDir.trim().endsWith("/")) {
