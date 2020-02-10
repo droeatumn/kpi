@@ -26,7 +26,7 @@ import groovy.util.CliBuilder.*
 import groovy.util.OptionAccessor
 
 // things that may change per run
-debugging = 1 // TRACE=1, DEBUG=2, INFO=3
+debugging = 5 // TRACE=1, DEBUG=2, INFO=3
 kmerSize = "25"
 minKmers = "3" // reads hit less than this will be ignored
 
@@ -35,12 +35,12 @@ err = System.err
 fileSeparator = System.getProperty('file.separator')
 
 OptionAccessor options = handleArgs(args)
+if(options.l != false) {
+    debugging = options.l.toInteger()
+}
 if(debugging <= 4) {
     err.println "kmerSize=${kmerSize} minKmers=${minKmers}"
 }    
-if((options.l != null) && (options.l != "")) {
-    debugging = options.l
-}
 
 // make list of fastq files for every individual
 // d and f options go together

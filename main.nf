@@ -55,12 +55,19 @@ if(params.l != null) {
 }
 
 if(params.m != null) {
-    mArray = params.m.split(fileSeparator)
-    mShort = mArray[-1].replaceFirst(".txt", "") + ".log"
-    probeCmd = "probeFastqsKMC.groovy -m ${params.m} ${logString} -o . -w . 2> ${mShort}"
+    logOut = ""
+    if(params.l != null) {
+        mArray = params.m.split(fileSeparator)
+        logOut = "2> " + mArray[-1].replaceFirst(".txt", "") + ".log"
+    }
+    probeCmd = "probeFastqsKMC.groovy -m ${params.m} ${logStringIn} -o . -w . ${logOut}"
     mapDir - params.m
 } else if(params.p != null) {
-    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} ${logString} -o . -w . 2> ${params.d}.log"
+    logOut = ""
+    if(params.l != null) {
+        logOut = "2> ${params.id}.log"
+    }
+    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} ${logStringIn} -o . -w . ${logOut}"
     mapDir - params.p
 }
 if(!mapDir.trim().endsWith("/")) {
@@ -74,12 +81,12 @@ fqsIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find anything in $mapDi
  */ 
 process probeFastqs {
 	//container = "droeatnmdp/kpi:latest"
-	//publishDir resultDir, mode: 'copy', overwrite: true
-//    maxForks 1
-	
+	//publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
+    
 	input: file(f) from fqsIn
 	output:
-    	file('*.kmc_*') into kmcdb
+      file('*.kmc_*') into kmcdb
+      file('*.log') optional true into kmcdbLog
 	script:
 		"""
         ${probeCmd}
