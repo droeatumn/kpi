@@ -27,7 +27,7 @@ import com.google.common.collect.Table
 import com.google.common.collect.HashBasedTable
 
 // things that may change per run
-debugging = 4 // TRACE=1, DEBUG=2, INFO=3
+debugging = 1 // TRACE=1, DEBUG=2, INFO=3
 // for all_haps_v6.xlsx, loci start at column index 5
 // haplotype	nomenclature	freq	structure	3DL3
 Integer startLocusIndex = 4
@@ -196,7 +196,7 @@ def void writeOutput(OptionAccessor options, Map genPAMap,
         err.println options.a
     }
     if(pacombinedSet.size() == 0) {
-        pacombinedSet.add("uninterpretable")
+        outStr = "${id}\tuninterpretable"
     } else {
         hapPair = pacombinedSet[0]
         locusMap = paHapPairTable.row(hapPair)
@@ -208,15 +208,14 @@ def void writeOutput(OptionAccessor options, Map genPAMap,
             err.println "writeOutput: absent-only $hapPair = " + absHapPairTable.row(hapPair)
             err.println "writeOutput: absLocusMap = " + absLocusMap
         }
-    }
+        outStr = "${id}\t${pacombinedSet.sort().sort().join('|')}"
 
-    outStr = "${id}\t${pacombinedSet.sort().sort().join('|')}"
-
-    locusMap = paHapPairTable.row(hapPair)
-    loci.each { locus ->
-        genePA = locusMap[locus] ?  "Y" : "N"
-        outStr += "\t${genePA}"
-    }
+        locusMap = paHapPairTable.row(hapPair)
+        loci.each { locus ->
+            genePA = locusMap[locus] ?  "Y" : "N"
+            outStr += "\t${genePA}"
+        }
+    } // interp or uninterp
     
     outWriter.println outStr
 	outWriter.close()
