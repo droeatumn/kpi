@@ -11,10 +11,7 @@ RUN apt-get update \
 
 # install stuff
 ENV TMPDIR /tmp
-RUN cd /opt \
-  && git clone https://github.com/droeatumn/kpi.git \
-  && mkdir -p /opt/kpi/raw /opt/bin \
-  && cd /opt/bin \
+RUN mkdir -p /opt/bin && cd /opt/bin \
   && wget -qO- http://get.nextflow.io | bash \
   && sed -i s/"curl -fsSL"/"curl -fsSLk"/ /opt/bin/nextflow \
   && chmod 755 /opt/bin/nextflow \
@@ -37,11 +34,19 @@ RUN cd /opt \
 # env vars
 ENV NXF_OPTS "-Xms4G -Xmx20G"
 ENV LD_LIBRARY_PATH /opt/lib:$LD_LIBRARY_PATH
-
-# kpi source
-RUN mkdir -p /opt/kpi/input /opt/kpi/output /opt/kpi/src /opt/kpi/work
-ENV TMPDIR=/opt/kpi/work
-ENV TMP=/opt/kpi/work
-ENV PATH /opt/bin:/opt/kpi:/opt/kpi/src:$PATH
+ENV PATH /opt/bin:$PATH
 ENV CLASSPATH /opt/guava/guava/target/guava-HEAD-jre-SNAPSHOT.jar:/opt/jars/commons-math3-3.6.1/commons-math3-3.6.1.jar:$CLASSPATH
-CMD ["/opt/kpi/main.nf"]
+
+# kpi files
+RUN mkdir -p /opt/kpi/input/example1 \
+  && cd /opt/kpi/input/example1 \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420439_paired1.bwa.read1.fastq.gz \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420439_paired1.bwa.read2.fastq.gz \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420440_paired1.bwa.read1.fastq.gz \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420440_paired1.bwa.read2.fastq.gz \
+ && mkdir -p /opt/kpi/input/example2 \
+  && cd /opt/kpi/input/example2 \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KP420439_paired1.bwa.read1.fastq.gz \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KP420439_paired1.bwa.read2.fastq.gz \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KU645197_paired1.bwa.read1.fastq.gz \
+  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KU645197_paired1.bwa.read2.fastq.gz
