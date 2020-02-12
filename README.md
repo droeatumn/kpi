@@ -9,12 +9,13 @@ configuration (e.g., $HOME/.nextflow/config). Make sure Docker is running
 and you are logged in to Docker Hub.
 
 <h2>Running</h2>
+<b>Input</b> <br>
 There are two input options.<br>
 1. An ID along with a folder of fasta or fastq files, optionally gzipped. (--raw)<br>
 2. A two-column text file, where the first column is an ID, and the second column is a fully-qualified local path to a fasta or fastq file. Each ID may have multiple rows. (--map)<br>
 <br>
 Option 1 is more efficient with respect to disk space. <br>
-
+<br>
 <b>Output</b> <br>
 For each input ID, an output text file will be created named '<id>_prediction.txt'. Each ID's output file contains a header line and a second line with the haplotype pair predictions and gene predictions. <br>
 Each haplotype within a pair is separated by a '+'. If the prediction is ambiguous, each pair of haplotypes is separated by '|'.
@@ -53,5 +54,5 @@ Run example 1 and example 2 from one input map file. It will create example1_pre
 Hardware
 For targeted sequencing, kpi requires at least 5G RAM total and 1G temp disk space/ID. For WGS, it requires 25G RAM total and 15G temp disk space/ID. It will scale to the number of CPUs available, with 6-12 being most efficient in general for WGS.
 
-Reference
+<b>Reference</b><br>
 A manuscript is under preparation.
