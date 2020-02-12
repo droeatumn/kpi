@@ -34,21 +34,13 @@ Option 2: Provide a file with a map (--map) from IDs to their raw data<br>
 <code>    ./main.nf --map mapFile.txt --output outDir</code><br>
 e.g., <code>    ./main.nf --map ~/input/idstoRaw.txt --output ~/output</code><br>
 
-<b>Examples using data in the image, so no input is required.</b><br>
+<b>Example using data in the image, so no input is required.</b><br>
 Example 1: cA01&tilde;tA01+cB01&tilde;tB01 with --raw.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes, so the haplotype predictions are very ambiguous. <br>
 
-<code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
-
-Example 2: cA01&tilde;tA01+cA01&tilde;tB01 with --map. <br>
-Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197).<br>
-
-<code>    ./main.nf --map ~/git/kpi/input/example2/example2.txt --output ~/output</code>
-
-Example 3: example 1 and example 2 with --map in the same file. <br>
-Run example 1 and example 2 from one input map file. It will create example1_prediction.txt and example2_prediction.txt.<br>
-
-<code>    ./main.nf --map ~/git/kpi/input/example1-2.txt --output ~/output</code>
+<code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br><br>
+<br>
+There is another example in 'example2'.<br>
 
 <b>Miscellaneous</b><br>
 Hardware
