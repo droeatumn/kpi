@@ -31,6 +31,7 @@ markerFile = file("${baseDir}/input/markers.fasta")
 params.haps = file("${baseDir}/input/haps.txt")
 params.map = null
 params.l = null // logging level (1=most to 5=least)
+params.container = "droeatumn/kpi:latest"
 
 // things that probably won't change per run
 fileSeparator = "/"
@@ -73,7 +74,7 @@ if(params.map != null) {
  * @todo m option only publishes everything at the end
  */ 
 process makeKmerDB {
-	container = "droeatumn/kpi:latest"
+	container = params.container
 //    publishDir resultDir, pattern: '*.kmc_*', mode: 'copy', overwrite: true
 // 	  publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
 //    errorStrategy 'ignore'
@@ -92,7 +93,7 @@ process makeKmerDB {
 } // makeKmerDB
 
 process queryDB {
-    container = "droeatumn/kpi:latest"
+	container = params.container
     //publishDir resultDir, mode: 'copy', overwrite: true
 
 	input:
@@ -120,7 +121,7 @@ process queryDB {
  * @todo improve the memory usage here
  */
 process db2Locus {
-    container = "droeatumn/kpi:latest"
+	container = params.container
     //publishDir resultDir, mode: 'copy', overwrite: true
 
     input:
@@ -158,7 +159,7 @@ fi
  * @todo document
  */
 process hapInterp {
-    container = "droeatumn/kpi:latest"
+	container = params.container
     publishDir resultDir, mode: 'copy', overwrite: true
 
     input:
