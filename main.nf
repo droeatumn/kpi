@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 /*
- * kpi
+ * KPI
  *
  * KIR structural interpretation for raw reads.
  *
@@ -9,43 +9,34 @@
  * presence/absence (PA) genotype from one individual and a collection
  * of PA reference haplotypes.
  * 
- * The input is a directory of 2-column tab-separated unix-formatted text 
- * files. Each file maps IDs to one or more files. The first column of each
- * file is the ID of a set of reads (e.g., representing
- * an individual). The second column is non-space-containing path to a 
- * optionally-gzipped fastq or fasta file.
- *
- * The output contains genotype and haplotype-pair predictions.
- *
- * One individual with 60G of gzippped fastq takes about todo minutes 
- * on an 8 CPU computer with 20G memory.
- * 
  * @author Dave Roe
- * @todo add logging output to all steps; # ./main.nf --m input/example2.txt --l 1
+ * @todo test that required inputs are submitted
+ * @todo combine probeDB and db2Locus so the kmc files can be deleted
+ * @todo coverage of 255 or higher is considered off kir
  */
 
-params.base = '/opt/kpi/'
+params.base = baseDir
 base = params.base + '/'
-params.p = base + 'raw/'
-params.output = base + 'output/'
-params.id = 'defaultID'
-geneProbes  = base + 'input/markers'
-nfForks = 4 // run this many input text files in parallel
+params.raw = base + '/raw/'
+raw = params.raw + "/"
+params.output = base + '/output/'
+params.id = ""
+markerDBPrefix  = 'markers'
+markerDBSuf = file("${baseDir}/input/markers.kmc_suf")
+markerDBPre = file("${baseDir}/input/markers.kmc_pre")
 // input: kmc probe txt files
 kmcNameSuffix = '_hits.txt'          // extension on the file name
 bin1Suffix = 'bin1'
-probeFile = base + 'input/markers.fasta'
-params.haps = base + 'input/haps.txt'
-params.m = null
+markerFile = file("${baseDir}/input/markers.fasta")
+params.haps = file("${baseDir}/input/haps.txt")
+params.map = null
 params.l = null // logging level (1=most to 5=least)
-inputSuffix = "txt"
-nfKMCForks = 1 // run this many input text files in parallel
 
 // things that probably won't change per run
 fileSeparator = "/"
 resultDir = params.output
 haps = params.haps
-if(!resultDir.trim().endsWith("/")) {
+if(!resultDir.endsWith("/")) {
 	resultDir += "/"
 }
 probeCmd = ""
@@ -55,90 +46,98 @@ if(params.l != null) {
     logIn = "-l ${params.l}"
 }
 
-if(params.m != null) {
-    logOut = ""
-    if(params.l != null) {
-        mArray = params.m.split(fileSeparator)
-        logOut = "2> " + mArray[-1].replaceFirst(".txt", "") + ".log"
+inputSuffix = "*.txt"   // for --m
+inOption = ""  // input type for probeFastqsKMC.groovy
+dOption = "" // d option probeFastqsKMC.groovy
+kpiIn = null
+if(params.map != null) {
+//    probeCmd = "probeFastqsKMC.groovy -m ${params.map} ${logIn} -o . -w . ${logOut}"
+    inOption = "--m"
+    mapFile = params.map
+    kpiIn = Channel.fromPath(mapFile).ifEmpty { error "cannot find file $mapFile" }
+} else if(raw != null) {
+//    probeCmd = "${baseDir}/src/probeFastqsKMC.groovy -d ${params.id} -p ${raw} ${logIn} -o . -w . ${logOut}"
+    inOption = "--p"
+    dOption = "--d"
+    if(params.id == null) {
+        params.id = "defaultID"
     }
-    probeCmd = "probeFastqsKMC.groovy -m ${params.m} ${logIn} -o . -w . ${logOut}"
-    mapDir - params.m
-} else if(params.p != null) {
-    logOut = ""
-    if(params.l != null) {
-        logOut = "2> ${params.id}.log"
-    }
-    probeCmd = "probeFastqsKMC.groovy -d ${params.id} -p ${params.p} ${logIn} -o . -w . ${logOut}"
-    mapDir - params.p
+    mapDir = raw
+    kpiIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
+//        fqsIn = Channel.fromPath(mapDir).map{ file -> tuple(file.baseName, file) }.ifEmpty { error "cannot find fastq/fastq in $mapDir" }
+//    fqsIn = Channel.fromPath(["${mapDir}*.fq", "${mapDir}*.fastq","${mapDir}*.fq.gz", "${mapDir}*.fastq.gz", "${mapDir}*.fa", "${mapDir}*.fasta","${mapDir}*.fa.gz", "${mapDir}*.fasta.gz"] ).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 }
-if(!mapDir.trim().endsWith("/")) {
-	mapDir += "/"
-}
-fqsIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find anything in $mapDir" }
 
 /* 
  * @todo handle both input options
  * @todo m option only publishes everything at the end
  */ 
-process probeFastqs {
-	//container = "droeatnmdp/kpi:latest"
-	publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
-    errorStrategy 'ignore'
-    validExitStatus 0,1
+process makeKmerDB {
+	container = "droeatumn/kpi:latest"
+//    publishDir resultDir, pattern: '*.kmc_*', mode: 'copy', overwrite: true
+// 	  publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
+//    errorStrategy 'ignore'
+//    validExitStatus 0,1
     
-	input: file(f) from fqsIn
+	input:
+      path(f) from kpiIn
 	output:
       file('*.kmc_*') optional true into kmcdb
-      file('*.log') optional true into kmcdbLog
+//      file('*.log') optional true into kmcdbLog
 	script:
 		"""
-        ${probeCmd}
+        ${baseDir}/src/probeFastqsKMC.groovy ${dOption} ${params.id} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
+    #    ${probeCmd}
 		"""
-} // probeFastqs
+} // makeKmerDB
 
-process probeDB {
+process queryDB {
+    container = "droeatumn/kpi:latest"
     //publishDir resultDir, mode: 'copy', overwrite: true
 
-	input: file(kmc) from kmcdb
+	input:
+      file(kmc) from kmcdb
+      file(markerDBSuf)
+      file(markerDBPre)
+      val(markerDBPrefix)
 	output:
 		file{ "*_hits.txt"} into filterdb
 	
 	script:
 		"""
-        filterMarkersKMC2.groovy -d . -p ${geneProbes} -o . -w .
+        ${baseDir}/src/filterMarkersKMC2.groovy -d ${kmc[0]} -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log
 		"""
 		
-} // probeFastqs
+} // queryDB
 
 /*
  * db2Locus
  *
  * Given a kmc output file, bin the hit reads into separate files based on locus.
- * 
- * e.g., ./kmc2Locus2.groovy -j 100a.txt -p kmers.txt -e bin1 -o output
- * 
+ *
  * Input files: e.g., 100a.fasta
  * Output files have an extension of 'bin1'.
  * @todo improve the memory usage here
  */
 process db2Locus {
-  //publishDir resultDir, mode: 'copy', overwrite: true
-  maxForks nfForks
+    container = "droeatumn/kpi:latest"
+    //publishDir resultDir, mode: 'copy', overwrite: true
 
-  input:
-    file(hits) from filterdb.flatMap()
-  output:
-	file{"*.bin1"} into bin1Fastqs
-	val(id) into idc
+    input:
+      file(hits) from filterdb.flatMap()
+      file(markerFile)
+    output:
+  	  file{"*.bin1"} into bin1Fastqs
+	  val(id) into idc
 
-script: 
+    script: 
     // e.g., gonl-100a.fasta
     // todo: document this
 	String dataset
 	String idn
 	id = hits.name.replaceFirst(kmcNameSuffix, "")
     """
-    kmc2LocusAvg2.groovy -j ${hits} -p ${probeFile} -e ${bin1Suffix} -i ${id} -o .
+    ${baseDir}/src/kmc2LocusAvg2.groovy -j ${hits} -p ${markerFile} -e ${bin1Suffix} -i ${id} -o . 2> kmc2LocusAvg2.log
 
 if ls *.bin1 1> /dev/null 2>&1; then
     : # noop
@@ -159,15 +158,17 @@ fi
  * @todo document
  */
 process hapInterp {
-  publishDir resultDir, mode: 'copy', overwrite: true
+    container = "droeatumn/kpi:latest"
+    publishDir resultDir, mode: 'copy', overwrite: true
 
-  input:
-	file(b1List) from bin1Fastqs
-	val(idIn) from idc
-  output:
-	file{"*_prediction.txt"} into predictionChannel
+    input:
+  	  file(b1List) from bin1Fastqs
+  	  val(idIn) from idc
+      file(haps)
+    output:
+	  file{"*_prediction.txt"} into predictionChannel
 
-  script:
+    script:
     """
     FILES="*.bin1"
     fileList=""
@@ -195,18 +196,6 @@ process hapInterp {
     done
     outFile=${idIn}
     outFile+="_prediction.txt"
-    pa2Haps.groovy -h ${haps} -q "\$fileList" -o "\$outFile"
+    ${baseDir}/src/pa2Haps.groovy -h ${haps} -q "\$fileList" -o "\$outFile" 2> pa2Haps.log
     """
 } // hapInterp
-
-// get the per-sample name
-def sample(Path path) {
-  def name = path.getFileName().toString()
-  int start = Math.max(0, name.lastIndexOf('/'))
-  int end = name.indexOf(inputSuffix)
-  if ( end <= 0 ) {
-    throw new Exception( "Expected file " + name + " to end in '" + inputSuffix + "'" );
-  }
-  end = end -1 // Remove the trailing '.'
-  return name.substring(start, end)
-} // sample
