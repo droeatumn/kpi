@@ -34,7 +34,8 @@ import groovy.util.OptionAccessor
 import org.apache.commons.math3.stat.StatUtils
 
 // things that may change per run
-debugging = 3 // TRACE=1, DEBUG=2, INFO=3
+debugging = 2 // TRACE=1, DEBUG=2, INFO=3
+ignoreNonGenes = true
 // ignore kmers with a count < this (currently not using)
 minKmers = 3
 kmcFasta = false   // kmc output format is fasta or text (false)
@@ -55,7 +56,7 @@ String probeFileName = options.p
 
 // convert kmc output file to fasta format (.bin1 extension)
 kmc2Fasta(kmcFileName, probeFileName, outputDir, id, extension,
-		  kmcFasta, probeFasta)
+		  kmcFasta, probeFasta, ignoreNonGenes)
 err.println "done"
 
 /*
@@ -68,7 +69,8 @@ err.println "done"
  * @todo modularize
  */
 int kmc2Fasta(String probeHitsFile, String probeFileName, String outputDir, 
-              String id, String extension, Boolean kmcFasta, Boolean probeFasta) { 
+              String id, String extension, Boolean kmcFasta, Boolean probeFasta,
+              Boolean ignoreNonGenes) { 
     if(debugging <= 1) { 
         err.println "kmc2Fasta(probeHitsFile=${probeHitsFile}, id=${id}, outputDir=${outputDir}, extension=${extension})"
     }
@@ -76,7 +78,8 @@ int kmc2Fasta(String probeHitsFile, String probeFileName, String outputDir,
     int retval = 0
 	// map: probe -> Set of loci
     HashMap<String, TreeSet<String>> locusProbeMap = loadProbeMap(probeFileName,
-																  probeFasta) 
+																  probeFasta,
+                                                                  ignoreNonGenes) 
 	if(debugging <= 3) {
 		err.println "kmc2Fasta: ${locusProbeMap.keySet().size()} locus/probes in ${probeFileName} (locusProbeMap)"
 	}
@@ -357,7 +360,8 @@ def String reverseComplement(String seq) {
  * @return Map: probe -> Set of loci
  */
 HashMap<String,TreeSet<String>> loadProbeMap(String probeListFileName,
-											 Boolean probeFasta) {
+											 Boolean probeFasta,
+                                             Boolean ignoreNonGenes) {
 	if(debugging <= 1) {
 		err.println "loadProbeMap(probeListFileName=${probeListFileName}, probeFasta=$probeFasta"
 	}
@@ -377,7 +381,7 @@ HashMap<String,TreeSet<String>> loadProbeMap(String probeListFileName,
 				/*if(debugging <= 2) { 
 					err.println "fasta: $locus $probe"
 				}*/
-				addToProbeMap(probeMap, locus, probe)
+				addToProbeMap(probeMap, locus, probe, ignoreNonGenes)
 				locus = null
 				probe = null
 			}
@@ -387,7 +391,7 @@ HashMap<String,TreeSet<String>> loadProbeMap(String probeListFileName,
 			if(debugging <= 2) { 
 				err.println "non-fasta: $locus $probe"
 			}
-			addToProbeMap(probeMap, locus, probe)
+			addToProbeMap(probeMap, locus, probe, ignoreNonGenes)
 		}
     } // each line of file
 
@@ -401,7 +405,11 @@ HashMap<String,TreeSet<String>> loadProbeMap(String probeListFileName,
 } // loadProbeMap
 
 void addToProbeMap(HashMap<String,TreeSet<String>> probeMap,
-				   String locus, String probe) {
+				   String locus, String probe, Boolean ignoreNonGenes) {
+    if(ignoreNonGenes && (locus.contains('-') || locus.contains('~'))) {
+        return
+    }
+
 	s = probeMap[probe]
 	if(s == null) {
 		s = new TreeSet()
