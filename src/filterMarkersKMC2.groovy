@@ -29,7 +29,7 @@ import groovy.util.CliBuilder.*
 import groovy.util.OptionAccessor
 
 // things that may change per run
-debugging = 1 // TRACE=1, DEBUG=2, INFO=3
+debugging = 3 // TRACE=1, DEBUG=2, INFO=3
 
 // things that probably won't change per run
 err = System.err
@@ -46,7 +46,7 @@ if(!outDir.endsWith(fileSeparator)) {
     outDir += fileSeparator
 }
 
-// loop through each directory within the input directory
+// loop through each file within the input directory
 TreeSet<String> dbSet = new TreeSet()
 // loop through the fasta files
 inFileSet.each { f ->
@@ -197,9 +197,6 @@ TreeSet<String> makeInFileSet(String inDir, String fileSeparator) {
 		}
 	} else {
         name = inDir
-        if(!name.startsWith(fileSeparator)) { 
-		    name = inDir + fileSeparator + f
-        }
 		ret.add(name)
 	}
 	return ret
