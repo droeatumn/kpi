@@ -26,7 +26,7 @@ import groovy.util.CliBuilder.*
 import groovy.util.OptionAccessor
 
 // things that may change per run
-debugging = 5 // TRACE=1, DEBUG=2, INFO=3
+debugging = 3 // TRACE=1, DEBUG=2, INFO=3
 kmerSize = "25"
 minKmers = "3" // reads hit less than this will be ignored
 
