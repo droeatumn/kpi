@@ -47,7 +47,7 @@ Hardware<br>
 For targeted sequencing, kpi requires at least 5G RAM total and 1G temp disk space/ID. For WGS, it requires 25G RAM total and 15G temp disk space/ID. It will scale to the number of CPUs available, with 6-12 being most efficient in general for WGS.<br>
 <br>
 Raw data<br>
-The software assumes average coverage for both chromosomes is less than 200. If this is not the case for your data, please downsample before running. Support for high coverage data is a future enhancement.<br>
+The software assumes average coverage for both chromosomes is less than 255. If this is not the case for your data, please downsample before running. Support for high coverage data is a future enhancement.<br>
 <br>
 <b>Reference</b><br>
 A manuscript is under preparation.
