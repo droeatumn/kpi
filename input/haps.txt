@@ -15,4 +15,3 @@ haplotype	nomenclature	Jiang 2012 freq	structure	3DL3	2DS2	2DL2	2DL3	2DP1	2DL1	3
 15	cB05~tB01	0.0037		1	1	0	0	1	1	1	1	0	1	1	0	1	0	1	1
 16	cA01~tB05	0.0030	tA01 w/3DS1	1	0	0	1	1	1	2	2	1	1	0	0	0	1	0	1
 21	cB05~tA01	0.0017		1	1	0	0	1	1	1	1	1	0	0	0	0	1	0	1
-	cA03~tB02	0.0000	...~2DL1/2DS1~3DL2	1	0	0	1	1	0	0	0	0	0	0	0	0	0	1	1
