@@ -98,8 +98,8 @@ process queryDB {
 
 	input:
       file(kmc) from kmcdb
-      file(markerDBSuf)
-      file(markerDBPre)
+//      file(markerDBSuf)
+//      file(markerDBPre)
       val(markerDBPrefix)
 	output:
 		file{ "*_hits.txt"} into filterdb
