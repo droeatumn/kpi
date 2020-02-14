@@ -2,7 +2,7 @@
 main.nf makes the predictions.
 
 <h2>Dependancies</h2>
-Install Nextflow, Docker, and Git.
+Install Java, Groovy, Nextflow, Docker, and Git.
 Create accounts in GitHub and Docker Hub.
 Add 'docker.enabled = true' and 'docker.fixOwnership = true' to your Nexflow
 configuration (e.g., $HOME/.nextflow/config). Make sure Docker is running
@@ -38,7 +38,7 @@ e.g., <code>    ./main.nf --map ~/input/idstoRaw.txt --output ~/output</code><br
 Example 1: cA01&tilde;tA01+cB01&tilde;tB01 with --raw.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes, so the haplotype predictions are very ambiguous. <br>
 
-<code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br><br>
+<code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
 <br>
 There is another example in 'example2'.<br>
 
