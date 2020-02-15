@@ -32,6 +32,11 @@ params.haps = file("${baseDir}/input/haps.txt")
 params.map = null
 params.l = null // logging level (1=most to 5=least)
 params.container = "droeatumn/kpi:latest"
+makeKmerDBFile = file('src/probeFastqsKMC.groovy')
+queryDBFile = file('src/filterMarkersKMC2.groovy')
+db2LocusFile = file('src/kmc2LocusAvg2.groovy')
+pa2HapsFile = file('src/pa2Haps.groovy')
+srcDir = pa2HapsFile.parent
 
 // things that probably won't change per run
 fileSeparator = "/"
@@ -52,12 +57,10 @@ inOption = ""  // input type for probeFastqsKMC.groovy
 dOption = "" // d option probeFastqsKMC.groovy
 kpiIn = null
 if(params.map != null) {
-//    probeCmd = "probeFastqsKMC.groovy -m ${params.map} ${logIn} -o . -w . ${logOut}"
     inOption = "--m"
     mapFile = params.map
     kpiIn = Channel.fromPath(mapFile).ifEmpty { error "cannot find file $mapFile" }
 } else if(raw != null) {
-//    probeCmd = "${baseDir}/src/probeFastqsKMC.groovy -d ${params.id} -p ${raw} ${logIn} -o . -w . ${logOut}"
     inOption = "--p"
     dOption = "--d"
     if(params.id == null) {
@@ -82,32 +85,34 @@ process makeKmerDB {
     
 	input:
       path(f) from kpiIn
+      file makeKmerDBFile
+      file srcDir
 	output:
       file('*.kmc_*') optional true into kmcdb
-//      file('*.log') optional true into kmcdbLog
+      file('*.log') optional true into kmcdbLog
 	script:
 		"""
-        ${baseDir}/src/probeFastqsKMC.groovy ${dOption} ${params.id} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
-    #    ${probeCmd}
+        src/${makeKmerDBFile} ${dOption} ${params.id} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
 		"""
 } // makeKmerDB
 
 process queryDB {
 	container = params.container
-    //publishDir resultDir, mode: 'copy', overwrite: true
 
 	input:
       file(kmc) from kmcdb
-//      file(markerDBSuf)
-//      file(markerDBPre)
       val(markerDBPrefix)
+      file markerDBSuf
+      file markerDBPre
+      file queryDBFile
+      file srcDir
 	output:
-		file{ "*_hits.txt"} into filterdb
+  	  file{ "*_hits.txt"} into filterdb
 	
 	script:
-		"""
-        ${baseDir}/src/filterMarkersKMC2.groovy -d ${kmc[0]} -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log
-		"""
+	"""
+    src/${queryDBFile} -d ${kmc[0]} -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log
+	"""
 		
 } // queryDB
 
@@ -127,6 +132,8 @@ process db2Locus {
     input:
       file(hits) from filterdb.flatMap()
       file(markerFile)
+      file db2LocusFile
+      file srcDir
     output:
   	  file{"*.bin1"} into bin1Fastqs
 	  val(id) into idc
@@ -138,7 +145,7 @@ process db2Locus {
 	String idn
 	id = hits.name.replaceFirst(kmcNameSuffix, "")
     """
-    ${baseDir}/src/kmc2LocusAvg2.groovy -j ${hits} -p ${markerFile} -e ${bin1Suffix} -i ${id} -o . 2> kmc2LocusAvg2.log
+    src/${db2LocusFile} -j ${hits} -p ${markerFile} -e ${bin1Suffix} -i ${id} -o . 2> kmc2LocusAvg2.log
 
 if ls *.bin1 1> /dev/null 2>&1; then
     : # noop
@@ -166,6 +173,8 @@ process hapInterp {
   	  file(b1List) from bin1Fastqs
   	  val(idIn) from idc
       file(haps)
+      file pa2HapsFile
+      file srcDir
     output:
 	  file{"*_prediction.txt"} into predictionChannel
 
@@ -197,6 +206,6 @@ process hapInterp {
     done
     outFile=${idIn}
     outFile+="_prediction.txt"
-    ${baseDir}/src/pa2Haps.groovy -h ${haps} -q "\$fileList" -o "\$outFile" 2> pa2Haps.log
+    src/${pa2HapsFile} -h ${haps} -q "\$fileList" -o "\$outFile" 2> pa2Haps.log
     """
 } // hapInterp
