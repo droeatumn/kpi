@@ -167,10 +167,11 @@ def void writeOutput(OptionAccessor options, Map genPAMap,
     if(startIdx < 0) {
         startIdx = 0
     }
-    endIdx = outFileName.indexOf("_") - 1
-    if(endIdx < 0) {
+    // trim things after the last "_"
+    //endIdx = outFileName.lastIndexOf("_") - 1
+    //if(endIdx < 0) {
         endIdx = outFileName.length() - 1
-    }
+    //}
     id = outFileName[startIdx..endIdx]
     //id = outFileName.replaceFirst("_prediction.txt", "")
 	
