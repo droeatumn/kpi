@@ -5,11 +5,6 @@
  *
  * Given a set of FASTQ files, create a KMC 3 database for each ID.
  *
- * e.g., probeFastqsKMC.groovy -m samples_map.txt -p 25mers.fasta -o . -w work
- *
- * Input either -p or -m. -p is preferred
- *   -p path to folder with fasta and fastq files (gzipped optional)
- *   -m map file with two columns: id and file name
  * 
  * Requires KMC 3.
  *   http://sun.aei.polsl.pl/REFRESH/index.php?page=projects&project=kmc

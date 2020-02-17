@@ -148,7 +148,6 @@ void filterKMC(String db, TreeSet dbSet, String id,
             err.println "filterKMC: returned ${retVal}"
         }
     }
-    err.println "droe2"//todo
     if(debugging <= 1) {
         err.println "filterKMC: return"
     }
