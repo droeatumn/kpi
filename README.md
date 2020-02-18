@@ -41,7 +41,7 @@ Run the following command for an example of interpreting synthetic reads created
 
 <code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
 <br>
-There is another example in 'example2'.<br>
+To run another example, replace 'example1' with 'example2'.<br>
 
 Example 2: cA01&tilde;tA01+cA01&tilde;tB01 with --map and --id.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197)).<br>
