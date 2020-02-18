@@ -11,8 +11,8 @@ and you are logged in to Docker Hub.
 <h2>Running</h2>
 <b>Input</b> <br>
 There are two input options.<br>
-1. An ID along with a folder of fasta or fastq files, optionally gzipped. (--raw)<br>
-2. A two-column text file, where the first column is an ID, and the second column is a fully-qualified local path to a fasta or fastq file. Each ID may have multiple rows. (--map)<br>
+1. An ID along with a folder of fasta or fastq files, optionally gzipped. (--raw and --id)<br>
+2. A two-column text file, where the first column is an ID, and the second column is a path to a fasta or fastq file (--map). The paths to the files should be relative to the map file and also under the map file in the directory structure. Each ID may have multiple rows.<br>
 <br>
 Option 1 is more efficient with respect to disk space. <br>
 <br>
@@ -33,6 +33,7 @@ e.g., <code>    ./main.nf --id id1 --raw ~/input --output ~/output</code><br>
 Option 2: Provide a file with a map (--map) from IDs to their raw data<br>
 <code>    ./main.nf --map mapFile.txt --output outDir</code><br>
 e.g., <code>    ./main.nf --map ~/input/idstoRaw.txt --output ~/output</code><br>
+In this example the path to files in idstoRaw.txt are somewhere under ~/input/.
 
 <b>Example using data in the image, so no input is required.</b><br>
 Example 1: cA01&tilde;tA01+cB01&tilde;tB01 with --raw.<br>
@@ -41,6 +42,12 @@ Run the following command for an example of interpreting synthetic reads created
 <code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
 <br>
 There is another example in 'example2'.<br>
+
+Example 2: cA01&tilde;tA01+cA01&tilde;tB01 with --map and --id.<br>
+Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197)).<br>
+
+<code>    ./main.nf --id ex12 --map ~/git/kpi/input/example2.txt --output ~/output</code><br>
+<br>
 
 <b>Miscellaneous</b><br>
 Hardware<br>

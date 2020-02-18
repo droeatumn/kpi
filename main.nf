@@ -20,7 +20,7 @@ base = params.base + '/'
 params.raw = base + '/raw/'
 raw = params.raw + "/"
 params.output = base + '/output/'
-params.id = ""
+params.id = "defaultID"
 markerDBPrefix  = 'markers'
 markerDBSuf = file("${baseDir}/input/markers.kmc_suf")
 markerDBPre = file("${baseDir}/input/markers.kmc_pre")
@@ -64,10 +64,7 @@ if(params.map != null) {
     kpiIn = Channel.fromPath(mapFile).ifEmpty { error "cannot find file $mapFile" }
 } else if(raw != null) {
     inOption = "--p"
-    dOption = "--d"
-    if(params.id == null) {
-        params.id = "defaultID"
-    }
+    dOption = "--d " + params.id
     kpiIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //        fqsIn = Channel.fromPath(mapDir).map{ file -> tuple(file.baseName, file) }.ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //    fqsIn = Channel.fromPath(["${mapDir}*.fq", "${mapDir}*.fastq","${mapDir}*.fq.gz", "${mapDir}*.fastq.gz", "${mapDir}*.fa", "${mapDir}*.fasta","${mapDir}*.fa.gz", "${mapDir}*.fasta.gz"] ).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
@@ -94,7 +91,7 @@ process makeKmerDB {
       file('*.log') optional true into kmcdbLog
 	script:
 		"""
-        src/${makeKmerDBFile} ${dOption} ${params.id} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
+        src/${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
 		"""
 } // makeKmerDB
 
