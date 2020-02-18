@@ -56,9 +56,11 @@ inputSuffix = "*.txt"   // for --m
 inOption = ""  // input type for probeFastqsKMC.groovy
 dOption = "" // d option probeFastqsKMC.groovy
 kpiIn = null
+mapDir = raw
 if(params.map != null) {
     inOption = "--m"
     mapFile = params.map
+    mapDir = file(params.map).parent
     kpiIn = Channel.fromPath(mapFile).ifEmpty { error "cannot find file $mapFile" }
 } else if(raw != null) {
     inOption = "--p"
@@ -66,7 +68,6 @@ if(params.map != null) {
     if(params.id == null) {
         params.id = "defaultID"
     }
-    mapDir = raw
     kpiIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //        fqsIn = Channel.fromPath(mapDir).map{ file -> tuple(file.baseName, file) }.ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //    fqsIn = Channel.fromPath(["${mapDir}*.fq", "${mapDir}*.fastq","${mapDir}*.fq.gz", "${mapDir}*.fastq.gz", "${mapDir}*.fa", "${mapDir}*.fasta","${mapDir}*.fa.gz", "${mapDir}*.fasta.gz"] ).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
@@ -87,6 +88,7 @@ process makeKmerDB {
       path(f) from kpiIn
       file makeKmerDBFile
       file srcDir
+      file mapDir
 	output:
       file('*.kmc_*') optional true into kmcdb
       file('*.log') optional true into kmcdbLog
