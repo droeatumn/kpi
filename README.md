@@ -48,6 +48,7 @@ Run the following command for an example of interpreting synthetic reads created
 
 <code>    ./main.nf --id ex2 --map ~/git/kpi/input/example2/example2.txt --output ~/output</code><br>
 <br>
+To run another example, replace 'example2' with 'example1'.<br>
 
 Example 3: combine Example 1 and 2 with --map and --id.<br>
 <code>    ./main.nf --id ex12 --map ~/git/kpi/input/example1-2.txt --output ~/output</code><br>
