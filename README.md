@@ -46,7 +46,11 @@ There is another example in 'example2'.<br>
 Example 2: cA01&tilde;tA01+cA01&tilde;tB01 with --map and --id.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197)).<br>
 
-<code>    ./main.nf --id ex12 --map ~/git/kpi/input/example2.txt --output ~/output</code><br>
+<code>    ./main.nf --id ex2 --map ~/git/kpi/input/example2/example2.txt --output ~/output</code><br>
+<br>
+
+Example 3: combine Example 1 and 2 with --map and --id.<br>
+<code>    ./main.nf --id ex12 --map ~/git/kpi/input/example1-2.txt --output ~/output</code><br>
 <br>
 
 <b>Miscellaneous</b><br>
