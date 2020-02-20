@@ -33,9 +33,6 @@ OptionAccessor options = handleArgs(args)
 if(options.l != false) {
     debugging = options.l.toInteger()
 }
-if(debugging <= 4) {
-    err.println "kmerSize=${kmerSize} minKmers=${minKmers}"
-}    
 
 // make list of fastq files for every individual
 // d and f options go together
@@ -47,6 +44,11 @@ if((path != null) && (path != "") && (path != "false")) {
 } else {
     path = ""
 }
+if(debugging <= 4) {
+    err.println "kmerSize=${kmerSize} minKmers=${minKmers}"
+    err.println "id=${id} output=${options.o}"
+}    
+
 HashMap<String,ArrayList<String>> fqMap = loadFqMap(id, path, mpath)
 if(debugging <= 2) {
     err.println "${fqMap.keySet().size()} IDs in the fastq map"
