@@ -38,15 +38,4 @@ ENV PATH /opt/bin:$PATH
 ENV CLASSPATH /opt/guava/guava/target/guava-HEAD-jre-SNAPSHOT.jar:/opt/jars/commons-math3-3.6.1/commons-math3-3.6.1.jar:$CLASSPATH
 
 # kpi files
-RUN mkdir -p /opt/kpi/input/example1 \
-  && cd /opt/kpi/input/example1 \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420439_paired1.bwa.read1.fastq.gz \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420439_paired1.bwa.read2.fastq.gz \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420440_paired1.bwa.read1.fastq.gz \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example1/KP420440_paired1.bwa.read2.fastq.gz \
- && mkdir -p /opt/kpi/input/example2 \
-  && cd /opt/kpi/input/example2 \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KP420439_paired1.bwa.read1.fastq.gz \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KP420439_paired1.bwa.read2.fastq.gz \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KU645197_paired1.bwa.read1.fastq.gz \
-  && wget https://github.com/droeatumn/kpi/blob/master/input/example2/KU645197_paired1.bwa.read2.fastq.gz
+RUN cd /opt && git clone https://github.com/droeatumn/kpi.git
