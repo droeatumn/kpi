@@ -45,8 +45,6 @@ haps = params.haps
 if(!resultDir.endsWith("/")) {
 	resultDir += "/"
 }
-probeCmd = ""
-mapDir = ""
 logIn = ""
 if(params.l != null) {
     logIn = "-l ${params.l}"
@@ -56,7 +54,7 @@ inputSuffix = "*.txt"   // for --m
 inOption = ""  // input type for probeFastqsKMC.groovy
 dOption = "" // d option probeFastqsKMC.groovy
 kpiIn = null
-mapDir = raw
+mapDir = home
 if(params.map != null) {
     inOption = "-m"
     mapFile = params.map
@@ -65,7 +63,7 @@ if(params.map != null) {
 } else if(raw != null) {
     inOption = "-p"
     dOption = "-d " + params.id
-    kpiIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
+    kpiIn = Channel.fromPath(raw).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //        fqsIn = Channel.fromPath(mapDir).map{ file -> tuple(file.baseName, file) }.ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //    fqsIn = Channel.fromPath(["${mapDir}*.fq", "${mapDir}*.fastq","${mapDir}*.fq.gz", "${mapDir}*.fastq.gz", "${mapDir}*.fa", "${mapDir}*.fasta","${mapDir}*.fa.gz", "${mapDir}*.fasta.gz"] ).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 }
