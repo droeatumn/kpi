@@ -24,34 +24,34 @@ Each haplotype within a pair is separated by a '+'. If the prediction is ambiguo
 The reference haplotypes are defined at https://github.com/droeatumn/kpi/blob/master/input/haps.txt <br>
 
 <b>Running</b><br>
-Use the 'raw' arguments to indicate the input directory, and 'output' to indicate the directory to put the output. The defaults are 'raw' and 'output' under the directory KPI was installed.<br>
+Use the 'home' argument to indicate the location of the 'kpi' directory from the pull.  Use 'raw' to indicate the input directory, and 'output' to indicate the directory to put the output. The defaults are 'raw' and 'output' under 'home'. By default, 'home' is the current working directory.<br>
 
 Option 1: Provide and ID (--id) and a folder (--raw) with its raw data<br>
 <code>    ./main.nf --id ID --raw inDir --output outDir</code><br>
-e.g., <code>    ./main.nf --id id1 --raw ~/input --output ~/output</code><br>
+e.g., <code>    ./main.nf --home ~/git/kpi --id id1 --raw ~/input --output ~/output</code><br>
 
 Option 2: Provide a file with a map (--map) from IDs to their raw data<br>
 <code>    ./main.nf --map mapFile.txt --output outDir</code><br>
-e.g., <code>    ./main.nf --map ~/input/idstoRaw.txt --output ~/output</code><br>
+e.g., <code>    ./main.nf --home ~/git/kpi --map ~/input/idstoRaw.txt --output ~/output</code><br>
 In this example the path to files in idstoRaw.txt are somewhere under ~/input/.
 
 <b>Example using data in the image, so no input is required.</b><br>
 Example 1: cA01&tilde;tA01+cB01&tilde;tB01 with --raw.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes, so the haplotype predictions are very ambiguous. <br>
 
-<code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
+<code>    ./main.nf --home ~/git/kpi --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
 <br>
 To run another example, replace 'example1' with 'example2'.<br>
 
 Example 2: cA01&tilde;tA01+cA01&tilde;tB01 with --map and --id.<br>
 Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KU645197 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KU645197)).<br>
 
-<code>    ./main.nf --id ex2 --map ~/git/kpi/input/example2/example2.txt --output ~/output</code><br>
+<code>    ./main.nf --home ~/git/kpi --id ex2 --map ~/git/kpi/input/example2/example2.txt --output ~/output</code><br>
 <br>
 To run another example, replace 'example2' with 'example1'.<br>
 
 Example 3: combine Example 1 and 2 with --map and --id.<br>
-<code>    ./main.nf --id ex12 --map ~/git/kpi/input/example1-2.txt --output ~/output</code><br>
+<code>    ./main.nf --home ~/git/kpi --id ex12 --map ~/git/kpi/input/example1-2.txt --output ~/output</code><br>
 <br>
 
 <b>Miscellaneous</b><br>
