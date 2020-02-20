@@ -39,3 +39,4 @@ ENV CLASSPATH /opt/guava/guava/target/guava-HEAD-jre-SNAPSHOT.jar:/opt/jars/comm
 
 # kpi files
 RUN cd /opt && git clone https://github.com/droeatumn/kpi.git
+CMD ["/opt/kpi/main.nf"]
