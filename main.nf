@@ -15,27 +15,27 @@
  * @todo coverage of 255 or higher is considered off kir
  */
 
-params.base = baseDir
-base = params.base + '/'
-params.raw = base + '/raw/'
+params.home = baseDir
+home = params.home + '/'
+params.raw = home + '/raw/'
 raw = params.raw + "/"
-params.output = base + '/output/'
+params.output = home + '/output/'
 params.id = "defaultID"
 markerDBPrefix  = 'markers'
-markerDBSuf = file("${baseDir}/input/markers.kmc_suf")
-markerDBPre = file("${baseDir}/input/markers.kmc_pre")
+markerDBSuf = file("${home}/input/markers.kmc_suf")
+markerDBPre = file("${home}/input/markers.kmc_pre")
 // input: kmc probe txt files
 kmcNameSuffix = '_hits.txt'          // extension on the file name
 bin1Suffix = 'bin1'
-markerFile = file("${baseDir}/input/markers.fasta")
-params.haps = file("${baseDir}/input/haps.txt")
+markerFile = file("${home}/input/markers.fasta")
+params.haps = file("${home}/input/haps.txt")
 params.map = null
 params.l = null // logging level (1=most to 5=least)
 params.container = "droeatumn/kpi:latest"
-makeKmerDBFile = file('src/probeFastqsKMC.groovy')
-queryDBFile = file('src/filterMarkersKMC2.groovy')
-db2LocusFile = file('src/kmc2LocusAvg2.groovy')
-pa2HapsFile = file('src/pa2Haps.groovy')
+makeKmerDBFile = file("${home}/src/probeFastqsKMC.groovy")
+queryDBFile = file("${home}/src/filterMarkersKMC2.groovy")
+db2LocusFile = file("${home}/src/kmc2LocusAvg2.groovy")
+pa2HapsFile = file("${home}/src/pa2Haps.groovy")
 srcDir = pa2HapsFile.parent
 
 // things that probably won't change per run
@@ -58,13 +58,13 @@ dOption = "" // d option probeFastqsKMC.groovy
 kpiIn = null
 mapDir = raw
 if(params.map != null) {
-    inOption = "--m"
+    inOption = "-m"
     mapFile = params.map
     mapDir = file(params.map).parent
     kpiIn = Channel.fromPath(mapFile).ifEmpty { error "cannot find file $mapFile" }
 } else if(raw != null) {
-    inOption = "--p"
-    dOption = "--d " + params.id
+    inOption = "-p"
+    dOption = "-d " + params.id
     kpiIn = Channel.fromPath(mapDir).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //        fqsIn = Channel.fromPath(mapDir).map{ file -> tuple(file.baseName, file) }.ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //    fqsIn = Channel.fromPath(["${mapDir}*.fq", "${mapDir}*.fastq","${mapDir}*.fq.gz", "${mapDir}*.fastq.gz", "${mapDir}*.fa", "${mapDir}*.fasta","${mapDir}*.fa.gz", "${mapDir}*.fasta.gz"] ).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
@@ -83,15 +83,15 @@ process makeKmerDB {
     
 	input:
       path(f) from kpiIn
-      file makeKmerDBFile
-      file srcDir
-      file mapDir
+      path(makeKmerDBFile)
+//      path(srcDir)
+//      path(mapDir)
 	output:
       file('*.kmc_*') optional true into kmcdb
       file('*.log') optional true into kmcdbLog
 	script:
 		"""
-        src/${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
+        ./${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
 		"""
 } // makeKmerDB
 
@@ -101,16 +101,15 @@ process queryDB {
 	input:
       file(kmc) from kmcdb
       val(markerDBPrefix)
-      file markerDBSuf
-      file markerDBPre
-      file queryDBFile
-      file srcDir
+      path(markerDBSuf)
+      path(markerDBPre)
+      path(queryDBFile)
 	output:
   	  file{ "*_hits.txt"} into filterdb
 	
 	script:
 	"""
-    src/${queryDBFile} -d ${kmc[0]} -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log
+    ./${queryDBFile} -d ${kmc[0]} -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log
 	"""
 		
 } // queryDB
@@ -131,8 +130,7 @@ process db2Locus {
     input:
       file(hits) from filterdb.flatMap()
       file(markerFile)
-      file db2LocusFile
-      file srcDir
+      file(db2LocusFile)
     output:
   	  file{"*.bin1"} into bin1Fastqs
 	  val(id) into idc
@@ -144,7 +142,7 @@ process db2Locus {
 	String idn
 	id = hits.name.replaceFirst(kmcNameSuffix, "")
     """
-    src/${db2LocusFile} -j ${hits} -p ${markerFile} -e ${bin1Suffix} -i ${id} -o . 2> kmc2LocusAvg2.log
+    ./${db2LocusFile} -j ${hits} -p ${markerFile} -e ${bin1Suffix} -i ${id} -o . 2> kmc2LocusAvg2.log
 
 if ls *.bin1 1> /dev/null 2>&1; then
     : # noop
@@ -172,8 +170,7 @@ process hapInterp {
   	  file(b1List) from bin1Fastqs
   	  val(idIn) from idc
       file(haps)
-      file pa2HapsFile
-      file srcDir
+      file(pa2HapsFile)
     output:
 	  file{"*_prediction.txt"} into predictionChannel
 
@@ -205,6 +202,6 @@ process hapInterp {
     done
     outFile=${idIn}
     outFile+="_prediction.txt"
-    src/${pa2HapsFile} -h ${haps} -q "\$fileList" -o "\$outFile" 2> pa2Haps.log
+    ./${pa2HapsFile} -h ${haps} -q "\$fileList" -o "\$outFile" 2> pa2Haps.log
     """
 } // hapInterp
