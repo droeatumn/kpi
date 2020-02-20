@@ -84,8 +84,7 @@ process makeKmerDB {
 	input:
       path(f) from kpiIn
       path(makeKmerDBFile)
-//      path(srcDir)
-//      path(mapDir)
+      path(mapDir)
 	output:
       file('*.kmc_*') optional true into kmcdb
       file('*.log') optional true into kmcdbLog
