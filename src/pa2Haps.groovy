@@ -49,7 +49,6 @@ OptionAccessor options = handleArgs(args)
 if(debugging <= 3) {
     err.println "pa2Haps -h ${options.h} -q ${options.q} -o -${options.o}"
 }
-
 // open file with haplotype definitions
 FileReader hapReader = new FileReader(new File(options.h))
 // string with probe query hits
@@ -83,23 +82,20 @@ log1(paHapTable, absHapPairTable, debugging)
 HashSet<String> hitSet = parseGenotypes(qString)
 
 // _all_ P/A gene genotype from genes -> Boolean
-HashMap<String,Boolean> genPAMap
+HashMap<String,Boolean> genPAMap = new HashMap()
 // genHitSet: a set of genes _that hit_
 // it is like hitSet, except there may be some nomenclature changes
-HashSet<String> genHitSet
-(genPAMap, genHitSet) = makeGenotypeMaps(hitSet,
-										 paHapTable.columnKeySet(),
-                                         paHapPairTable, nomenclatureMap)
-
+HashSet<String> genHitSet = new HashSet()
+makeGenotypeMaps(hitSet, paHapTable.columnKeySet(),
+                 paHapPairTable, nomenclatureMap, genPAMap, genHitSet)
 // first, match genotype with pairs of PA haplotypes
 // i.e, without the absent only
 // haplotype pairs -> Map[locus: boolean]
 // make hap pair predictions from gene probe hits
 HashMap<String, HashMap<String,Boolean>> interpPAMap = null
-interpPAMap = interpret(paHapPairTable, genPAMap, false)
-
-//// now narrow the results by the absent-only loci
-interpAbsMap = interpret(absHapPairTable, genPAMap, true)
+interpPAMap = interpret(paHapPairTable, genPAMap, new Boolean(false))
+// now narrow the results by the absent-only loci
+interpAbsMap = interpret(absHapPairTable, genPAMap, new Boolean(true))
 HashSet<String> nonHapPredictionSet = interpPAMap.keySet()
 if((interpAbsMap != null) && (interpAbsMap.size() > 0)) {
     nonHapPredictionSet = interpPAMap.keySet().intersect(interpAbsMap.keySet()) // ~
@@ -662,6 +658,7 @@ def HashSet<String> parseGenotypes(String reader) {
 
 /*
  * makeGenotypeMaps
+ * Populate paProbeMap and allProbeMap
  *
  * @param lociSet Set containing Strings from the '.bin1' loci list
  * @param geneSet Set containing all reference loci 
@@ -670,20 +667,20 @@ def HashSet<String> parseGenotypes(String reader) {
  */
 List makeGenotypeMaps(HashSet<String> lociSet, Set<String> geneSet,
                       HashBasedTable<String, String, Boolean> paHapPairTable,
-                      HashMap<String, String> nomenclatureMap) {
+                      HashMap<String, String> nomenclatureMap,
+                      HashMap<String,Boolean> paProbeMap,
+                      HashSet<String> allProbeMap) {
     if(debugging <= 1) {
         err.println "makeGenotypeMaps()"
     }
-    HashMap<String,Boolean> paProbeMap = new HashMap()
-    HashSet<String> allProbeMap = new HashSet()
 
     // initialze paProbeMap to false for all genes
     for(String gene : geneSet) {
-        paProbeMap[gene] = false
+        paProbeMap[gene] = new Boolean(false)
     } // initialze paProbeMap
 
     lociSet.each { locus ->
-        paProbeMap[locus] = true
+        paProbeMap[locus] = new Boolean(true)
         nomLocus = nomenclatureMap[locus]
         if(debugging < 1) { 
             err.println "nomLocus=${nomLocus}, locus=${locus}"
@@ -763,8 +760,7 @@ def HashMap<String, HashMap<String,Boolean>> hapPairs2Genotypes(HashMap<String,H
  * @return a Map from haplotype pairs to a Map of loci and their Boolean values; this is a potentially ambiiguous P/A interpretPAation
  * todo make a more elegant (e.g., vector-based) approach
  */
-HashMap<String, HashMap<String,Boolean>>
-        interpret(HashBasedTable<String, String, Boolean> hapPairTable,
+HashMap<String, HashMap<String,Boolean>> interpret(HashBasedTable<String, String, Boolean> hapPairTable,
                   HashMap<String,Boolean> genPAMap, Boolean absentOnly) {
     if(debugging <= 1) {
         err.println "interpret()"
