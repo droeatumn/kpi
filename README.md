@@ -24,7 +24,7 @@ Each haplotype within a pair is separated by a '+'. If the prediction is ambiguo
 The reference haplotypes are defined at https://github.com/droeatumn/kpi/blob/master/input/haps.txt <br>
 
 <b>Running</b><br>
-Use the 'home' argument to indicate the location of the 'kpi' directory from the pull.  Use 'raw' to indicate the input directory, and 'output' to indicate the directory to put the output. The defaults are 'raw' and 'output' under 'home'. By default, 'home' is the current working directory.<br>
+Use the 'home' parameter to indicate the location of the 'kpi' directory from the pull.  Use 'raw' to indicate the input directory, and 'output' to indicate the directory to put the output. The defaults are 'raw' and 'output' under 'home'. By default, 'home' is the current working directory.<br>
 
 Option 1: Provide and ID (--id) and a folder (--raw) with its raw data<br>
 <code>    ./main.nf --id ID --raw inDir --output outDir</code><br>
@@ -60,6 +60,10 @@ For targeted sequencing, kpi requires at least 5G RAM total and 1G temp disk spa
 <br>
 Raw data<br>
 The software assumes average coverage for both chromosomes is less than 255. If this is not the case for your data, please downsample before running. Support for high coverage data is a future enhancement.<br>
+<br>
+Containers<br>
+To run without a container, use the --nocontainer parameter. To use a
+container other than the default (droeatumn/kpi:latest), use the --container paramter.
 <br>
 <b>Reference</b><br>
 A manuscript is under preparation.

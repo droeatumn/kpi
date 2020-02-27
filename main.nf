@@ -37,6 +37,7 @@ queryDBFile = file("${home}/src/filterMarkersKMC2.groovy")
 db2LocusFile = file("${home}/src/kmc2LocusAvg2.groovy")
 pa2HapsFile = file("${home}/src/pa2Haps.groovy")
 srcDir = pa2HapsFile.parent
+params.nocontainer = "null"
 
 // things that probably won't change per run
 fileSeparator = "/"
@@ -73,7 +74,9 @@ if(params.map != null) {
  * @todo m option only publishes everything at the end
  */ 
 process makeKmerDB {
-	container = params.container
+    if(params.nocontainer == "null") { 
+	    container = params.container
+    }
 //    publishDir resultDir, pattern: '*.kmc_*', mode: 'copy', overwrite: true
 // 	  publishDir resultDir, pattern: '*.log', mode: 'copy', overwrite: true
 //    errorStrategy 'ignore'
@@ -93,7 +96,9 @@ process makeKmerDB {
 } // makeKmerDB
 
 process queryDB {
-	container = params.container
+    if(params.nocontainer == "null") { 
+	    container = params.container
+    }
 
 	input:
       file(kmc) from kmcdb
@@ -121,7 +126,9 @@ process queryDB {
  * @todo improve the memory usage here
  */
 process db2Locus {
-	container = params.container
+    if(params.nocontainer == "null") { 
+	    container = params.container
+    }
     //publishDir resultDir, mode: 'copy', overwrite: true
 
     input:
@@ -160,7 +167,9 @@ fi
  * @todo document
  */
 process hapInterp {
-	container = params.container
+    if(params.nocontainer == "null") { 
+	    container = params.container
+    }
     publishDir resultDir, mode: 'copy', overwrite: true
 
     input:
