@@ -63,7 +63,7 @@ The software assumes average coverage for both chromosomes is less than 255. If 
 <br>
 Containers<br>
 To run without a container, use the --nocontainer parameter. To use a
-container other than the default (droeatumn/kpi:latest), use the --container paramter.
-<br>
+container other than the default (droeatumn/kpi:latest), use the --container parameter.
+<br><br>
 <b>Reference</b><br>
 A manuscript is under preparation.
