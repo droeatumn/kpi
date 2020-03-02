@@ -39,8 +39,8 @@ OptionAccessor options = handleArgs(args)
 if(debugging <= 4) {
     err.println "filterMarkersKMC(options=${options})"
 }
-probeFile = options.p
-TreeSet<String> inFileSet = makeInFileSet(options.d, fileSeparator)
+probeFileName = options.p
+TreeSet<String> inFileSet = makeInFileSet(options.d, probeFileName, fileSeparator)
 outDir = options.o
 if(!outDir.endsWith(fileSeparator)) {
     outDir += fileSeparator
@@ -64,7 +64,7 @@ dbSet.each { db ->
         err.println "processing ${db} ..."
     }
 
-    ret = filterKMC(db, dbSet, db, probeFile, outDir)
+    ret = filterKMC(db, dbSet, db, probeFileName, outDir)
 } // each subdirectory
 
 err.println "done"
@@ -80,9 +80,9 @@ err.println "done"
  *
  */
 void filterKMC(String db, TreeSet dbSet, String id,
-			   String probeFile, String outDir) {
+			   String probeFileName, String outDir) {
     if(debugging <= 1) {
-        err.println "filterKMC(db=${db}, dbSet=${dbSet}, id=${id}, probeFile=${probeFile}, outDir=${outDir})"
+        err.println "filterKMC(db=${db}, dbSet=${dbSet}, id=${id}, probeFileName=${probeFileName}, outDir=${outDir})"
     }
     // make the command file
     String defFileName = null
@@ -94,7 +94,7 @@ void filterKMC(String db, TreeSet dbSet, String id,
     resultDb = outDir + dbNoUnique
 	resultFile = outDir + dbNoUnique + extension
 	// e.g., kmc_tools simple gonl-53a ~/doc/kir/snp/25mers_phv2 intersect gonl-53a_probes -ocleft
-    cmd = ["kmc_tools", "-hp", "simple", dbname, probeFile, "intersect", 
+    cmd = ["kmc_tools", "-hp", "simple", dbname, probeFileName, "intersect", 
            resultDb, "-ocleft"]
     if(debugging <= 3) {
         err.println cmd
@@ -103,7 +103,7 @@ void filterKMC(String db, TreeSet dbSet, String id,
     ret.waitFor()
     retVal = ret.exitValue()
     if(debugging <= 2) {
-        err.println "filterKMC: returned ${retVal}"
+        err.println "filterKMC: cmd returned ${retVal}"
     }
 
 	// e.g., kmc_dump -s gonl-53a_probes gonl-53a_hits.txt
@@ -115,17 +115,23 @@ void filterKMC(String db, TreeSet dbSet, String id,
     ret.waitFor()
     retVal = ret.exitValue()
     if(debugging <= 2) {
-        err.println "filterKMC: returned ${retVal}"
+        err.println "filterKMC: cmd returned ${retVal}"
     }
 
-    // todo: not working
     pwd = System.getProperty("user.dir");
 	rmFile1 = pwd + "/${dbname}.kmc_pre"
 	rmFile2 = pwd + "/${dbname}.kmc_suf"
+	rmFile3 = pwd + "/${dbname}_hits.kmc_pre"
+	rmFile4 = pwd + "/${dbname}_hits.kmc_suf"
+    if(debugging <= 2) {
+        err.println "filterKMC: deleting ${rmFile1}, ${rmFile2}, ${rmFile3}, ${rmFile4}"
+    }    
     try { 
         rmFile1S = Files.readSymbolicLink(rmFile1)
         rmFile2S = Files.readSymbolicLink(rmFile2)
-	    cmd = ["rm", "-f", rmFile1S.toString(), rmFile2S.toString()]
+        rmFile3S = Files.readSymbolicLink(rmFile3)
+        rmFile4S = Files.readSymbolicLink(rmFile4)
+	    cmd = ["rm", "-f", rmFile1S.toString(), rmFile2S.toString(), rmFile3S.toString(), rmFile4S.toString()]
         if(debugging <= 3) {
             err.println cmd
         }
@@ -133,11 +139,11 @@ void filterKMC(String db, TreeSet dbSet, String id,
         ret.waitFor()
         retVal = ret.exitValue()
         if(debugging <= 2) {
-            err.println "filterKMC: returned ${retVal}"
+            err.println "filterKMC: cmd returned ${retVal}"
         }
     } catch(NotLinkException) {
         err.println "not sym link"
-	    cmd = ["rm", "-f", rmFile1.toString(), rmFile2.toString()]
+	    cmd = ["rm", "-f", rmFile1.toString(), rmFile2.toString(), rmFile3.toString(), rmFile4.toString()]
         if(debugging <= 3) {
             err.println cmd
         }
@@ -145,9 +151,10 @@ void filterKMC(String db, TreeSet dbSet, String id,
         ret.waitFor()
         retVal = ret.exitValue()
         if(debugging <= 2) {
-            err.println "filterKMC: returned ${retVal}"
+            err.println "filterKMC: cmd returned ${retVal}"
         }
     }
+
     if(debugging <= 1) {
         err.println "filterKMC: return"
     }
@@ -180,7 +187,7 @@ HashMap<String,String> inFilesToSet(File dir) {
  * Make a set of file names given a directory or file name.
  *
  */
-TreeSet<String> makeInFileSet(String inDir, String fileSeparator) {
+TreeSet<String> makeInFileSet(String inDir, String probeFileName, String fileSeparator) {
 	if(debugging <= 2) { 
 		err.println "inDir=${inDir}"
 	}
@@ -190,6 +197,9 @@ TreeSet<String> makeInFileSet(String inDir, String fileSeparator) {
 		fp = ~/(.*).kmc_pre/
 		f.eachFileMatch(fp) { f2 ->
             name = f2.toString()
+            if(name.endsWith("${probeFileName}.kmc_pre") == true) { // skip the marker file
+                return
+            }
 			//name = inDir + fileSeparator + name
 			name = name.replaceFirst("././", "")
 			ret.add(name)
