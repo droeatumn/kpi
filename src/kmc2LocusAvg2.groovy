@@ -34,7 +34,7 @@ import groovy.util.OptionAccessor
 import org.apache.commons.math3.stat.StatUtils
 
 // things that may change per run
-debugging = 2 // TRACE=1, DEBUG=2, INFO=3
+debugging = 3 // TRACE=1, DEBUG=2, INFO=3
 ignoreNonGenes = true
 // ignore kmers with a count < this (currently not using)
 minKmers = 3
