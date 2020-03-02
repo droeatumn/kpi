@@ -85,36 +85,21 @@ process makeKmerDB {
 	input:
       path(f) from kpiIn
       path(makeKmerDBFile)
-      path(mapDir)
-	output:
-      file('*.kmc_*') optional true into kmcdb
-      file('*.log') optional true into kmcdbLog
-	script:
-		"""
-        ./${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
-		"""
-} // makeKmerDB
-
-process queryDB {
-    if(params.nocontainer == "null") { 
-	    container = params.container
-    }
-
-	input:
-      file(kmc) from kmcdb
-      val(markerDBPrefix)
       path(markerDBSuf)
       path(markerDBPre)
+      path(mapDir)
       path(queryDBFile)
+      val(markerDBPrefix)
 	output:
   	  file{ "*_hits.txt"} into filterdb
-	
+//      file('*.log') optional true into kmcdbLog
 	script:
 	"""
-    ./${queryDBFile} -d ${kmc[0]} -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log
-	"""
-		
-} // queryDB
+    ./${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
+    ./${queryDBFile} -d . -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log		
+    find . -type f -size 0 | xargs rm # remove 0 length files, especially hits.txt files
+    """
+} // makeKmerDB
 
 /*
  * db2Locus
