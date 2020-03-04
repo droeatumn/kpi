@@ -98,6 +98,11 @@ do
     fi
     rm -f \$base.fastq \$base.kmc_suf \$base.kmc_pre
 
+    o=`env | grep -i java`
+    echo \$o &>>\$base.log
+    o=`cat /proc/meminfo`
+    echo \$o &>>\$base.log
+
 done
     """
 } // testKMC
