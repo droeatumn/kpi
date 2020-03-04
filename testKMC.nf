@@ -78,7 +78,7 @@ process testKMC {
 for file in ${f}/*.gz
 do
     base=\$(basename "\$file")
-    #echo "zcat \$file > \$base.fastq ... " > \$base.log
+    echo "zcat \$file > \$base.fastq ... " > \$base.log
     if zcat \$file > \$base.fastq  2>> \$base.log; then
         echo "zcat \$file worked" >> \$base.log
         echo "kmc \$file \$base ..." >> \$base.log
