@@ -32,7 +32,8 @@ RUN cd /opt \
   && mvn install
 
 # env vars
-ENV NXF_OPTS "-Xms4G -Xmx20G"
+ENV NXF_OPTS "-Xms4G -Xmx50G"
+ENV JAVA_OPTS "-Xms4G -Xmx50G"
 ENV LD_LIBRARY_PATH /opt/lib:$LD_LIBRARY_PATH
 ENV PATH /opt/bin:$PATH
 ENV CLASSPATH /opt/guava/guava/target/guava-HEAD-jre-SNAPSHOT.jar:/opt/jars/commons-math3-3.6.1/commons-math3-3.6.1.jar:$CLASSPATH
