@@ -90,6 +90,7 @@ process makeKmerDB {
       path(mapDir)
       path(queryDBFile)
       val(markerDBPrefix)
+      env(JAVA_OPTS) from ('-Xms2G -Xmx50G')
 	output:
   	  file{ "*_hits.txt"} into filterdb
 //      file('*.log') optional true into kmcdbLog
@@ -120,6 +121,7 @@ process db2Locus {
       file(hits) from filterdb.flatMap()
       file(markerFile)
       file(db2LocusFile)
+      env(JAVA_OPTS) from ('-Xms2G -Xmx50G')
     output:
   	  file{"*.bin1"} into bin1Fastqs
 	  val(id) into idc
