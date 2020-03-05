@@ -91,7 +91,7 @@ do
         echo "*ERROR*: zcat \$file failed" >> \$base.log
     fi
 
-    if du -hs \$file \$base.fastq \$base.kmc_suf >> \$base.log; then
+    if du -hs \$file \$base.fastq \$base.kmc_pre >> \$base.log; then
         echo "du \$file worked"
     else
         echo "du \$file failed"
