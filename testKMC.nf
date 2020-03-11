@@ -69,13 +69,14 @@ process testKMC {
       path(mapDir)
       path(queryDBFile)
       val(markerDBPrefix)
-      env(JAVA_OPTS) from ("-Xms2G -Xmx200G")
+//      env(JAVA_OPTS) from ("-Xmx200g")
 	output:
   	  path{ "*.log"} into filterdb
 
 
 	script:
 	"""
+    export JAVA_OPTS='-Xmx200g'
 for file in ${f}/*.gz
 do
     base=\$(basename "\$file")

@@ -90,12 +90,13 @@ process makeKmerDB {
       path(mapDir)
       path(queryDBFile)
       val(markerDBPrefix)
-      env(JAVA_OPTS) from ("-Xms2G -Xmx200G")
+//      env(JAVA_OPTS) from ("-Xmx200g")
 	output:
   	  file{ "*_hits.txt"} into filterdb
 //      file('*.log') optional true into kmcdbLog
 	script:
 	"""
+    export JAVA_OPTS='-Xmx200g'
     ./${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
     ./${queryDBFile} -d . -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log		
     find . -type f -size 0 | xargs rm # remove 0 length files, especially hits.txt files
