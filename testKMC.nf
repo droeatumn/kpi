@@ -69,7 +69,7 @@ process testKMC {
       path(mapDir)
       path(queryDBFile)
       val(markerDBPrefix)
-      env(JAVA_OPTS) from ('-Xms2G -Xmx200G')
+      env(JAVA_OPTS) from ("-Xms2G -Xmx200G")
 	output:
   	  path{ "*.log"} into filterdb
 

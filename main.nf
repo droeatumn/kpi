@@ -90,7 +90,7 @@ process makeKmerDB {
       path(mapDir)
       path(queryDBFile)
       val(markerDBPrefix)
-      env(JAVA_OPTS) from ('-Xms2G -Xmx200G')
+      env(JAVA_OPTS) from ("-Xms2G -Xmx200G")
 	output:
   	  file{ "*_hits.txt"} into filterdb
 //      file('*.log') optional true into kmcdbLog
