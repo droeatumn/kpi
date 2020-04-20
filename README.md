@@ -12,7 +12,7 @@ and you are logged in to Docker Hub.
 <b>Input</b> <br>
 There are two input options.<br>
 1. An ID along with a folder of fasta or fastq files, optionally gzipped. (--raw and --id)<br>
-2. A two-column text file, where the first column is an ID, and the second column is a path to a fasta or fastq file (--map). The paths to the files should be relative to the map file and also under the map file in the directory structure. Each ID may have multiple rows.<br>
+2. A two-column text file, where the first column is an ID, and the second column is a path to a fasta or fastq file (--map). Each ID may have multiple rows. The paths to the files be absolute or relative, but the files must be in the same directory as the map file or under it. If using relative paths, the paths must start with the _parent_ folder of the map file.<br>
 <br>
 Option 1 is more efficient with respect to disk space. <br>
 <br>
