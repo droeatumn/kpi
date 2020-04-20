@@ -67,5 +67,7 @@ Containers<br>
 To run without a container, use the --nocontainer parameter. To use a
 container other than the default (droeatumn/kpi:latest), use the --container parameter.
 <br><br>
+To run in a self contained environment with the --id parameter.<br>
+<code>docker run --rm -it -v <inDir>:/opt/kpi/raw/ -v <outDir>:/opt/kpi/output/ droeatumn/kpi:latest /opt/kpi/main.nf --id <output ID></code><br>
 <b>Reference</b><br>
 A manuscript is under preparation.
