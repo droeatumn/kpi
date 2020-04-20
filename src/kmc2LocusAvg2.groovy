@@ -181,7 +181,7 @@ int kmc2Fasta(String probeHitsFile, String probeFileName, String outputDir,
 		}
 		double[] pListD = plist.toArray()
 //todo(testing)		double[] avgList = StatUtils.mode(pListD)
-        double[] avgList = Math.floor(StatUtils.mean(pListD))//todo: testing
+        double[] avgList = Math.floor(StatUtils.mean(pListD))
 		if(debugging <= 4) {
 			err.println "$loc avgList=" + avgList
 		}
