@@ -1,7 +1,7 @@
 # KPI
 main.nf makes the predictions.
 
-<h2>Dependancies</h2>
+<h2>Dependencies</h2>
 Install Java, Groovy, Nextflow, Docker, and Git.
 Create accounts in GitHub and Docker Hub.
 Add 'docker.enabled = true' and 'docker.fixOwnership = true' to your Nexflow
