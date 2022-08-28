@@ -16,8 +16,9 @@ RUN mkdir -p /opt/bin && cd /opt/bin \
   && sed -i s/"curl -fsSL"/"curl -fsSLk"/ /opt/bin/nextflow \
   && chmod 755 /opt/bin/nextflow \
   && /opt/bin/nextflow \
-  && wget https://github.com/refresh-bio/KMC/releases/download/v3.1.1/KMC3.1.1.linux.tar.gz \
-  && gunzip KMC3.1.1.linux.tar.gz && tar -xvf KMC3.1.1.linux.tar && rm -f KMC3.KMC3.1.1.linux.tar \
+  && wget https://github.com/refresh-bio/KMC/releases/download/v3.2.1/KMC3.2.1.linux.tar.gz \
+  && gunzip KMC3.2.1.linux.tar.gz && tar -xvf KMC3.2.1.linux.tar && rm -f KMC3.2.1.linux.tar \
+  && mv bin/* . && rmdir bin \
   && mkdir -p /opt/jars \
   && cd /opt/jars \
   && wget http://www.apache.org/dist/commons/math/binaries/commons-math3-3.6.1-bin.tar.gz \
