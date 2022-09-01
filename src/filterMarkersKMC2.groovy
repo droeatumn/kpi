@@ -25,11 +25,8 @@
  */
 
 import groovy.io.*
-import org.apache.commons.cli.CliBuilder
-import org.apache.commons.cli.OptionAccessor
-// newer?
-//import groovy.cli.commons.CliBuilder
-//import groovy.cli.commons.OptionAccessor
+import groovy.cli.commons.CliBuilder
+import groovy.cli.commons.OptionAccessor
 
 // things that may change per run
 debugging = 3 // TRACE=1, DEBUG=2, INFO=3
