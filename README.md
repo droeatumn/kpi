@@ -27,13 +27,15 @@ The reference haplotypes are defined at https://github.com/droeatumn/kpi/blob/ma
 Use 'raw' to indicate the input directory, and 'output' to indicate the
 directory to put the output. The defaults are 'raw' and 'output' under the
 location where KPI was pulled.<br>
+Use 'filetype' to indicated the input type; default is 'fq' (FASTQ).<br>
+<code>    f<a/q/m/bam/kmc> - input in FASTA format (fa), FASTQ format (fq), multi FASTA (fm) or BAM (fbam) or KMC(fkmc); default: FASTQ</code><br>
 
 Option 1: Provide and ID (--id) and a folder (--raw) with its raw data<br>
-<code>    ./main.nf --id ID --raw inDir --output outDir</code><br>
+<code>    ./main.nf --id ID --raw inDir --output outDir --filetype fq</code><br>
 e.g., <code>    ./main.nf --id id1 --raw ~/input --output ~/output</code><br>
 
 Option 2: Provide a file with a map (--map) from IDs to their raw data<br>
-<code>    ./main.nf --map mapFile.txt --output outDir</code><br>
+<code>    ./main.nf --map mapFile.txt --output outDir --filetype fq</code><br>
 e.g., <code>    ./main.nf --map ~/input/idstoRaw.txt --output ~/output</code><br>
 In this example the path to files in idstoRaw.txt are somewhere under ~/input/.
 
