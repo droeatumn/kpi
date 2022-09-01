@@ -3,8 +3,8 @@ MAINTAINER Dave Roe
 
 # apt stuff
 RUN apt-get update \
-  && apt-get install -qyy curl git make vim cmake \
-     gcc g++ unzip subversion gzip openjdk-17-jdk openjdk-17-doc groovy wget \
+  && apt-get install -qyy curl git make vim cmake zip \
+     gcc g++ unzip subversion gzip openjdk-17-jdk openjdk-17-doc wget \
      zlib1g-dev gnuplot \
      bzip2 libbz2-dev liblzma-dev libncurses5-dev libncursesw5-dev \
   && apt-get clean
@@ -22,7 +22,10 @@ RUN mkdir -p /opt/bin && cd /opt/bin \
   && cd /opt/jars \
   && wget http://www.apache.org/dist/commons/math/binaries/commons-math3-3.6.1-bin.tar.gz \
   && tar -zxvf commons-math3-3.6.1-bin.tar.gz \
-  && rm -f /opt/jars/commons-math3-3.6.1-bin.tar.gz
+  && rm -f /opt/jars/commons-math3-3.6.1-bin.tar.gz \
+  && curl -s get.sdkman.io | bash \
+  && source "/root/.sdkman/bin/sdkman-init.sh" \
+  && sdk install groovy
   
 # google guava
 ENV JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
