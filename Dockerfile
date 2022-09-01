@@ -4,7 +4,7 @@ MAINTAINER Dave Roe
 # apt stuff
 RUN apt-get update \
   && apt-get install -qyy curl git make vim cmake \
-     gcc g++ unzip subversion gzip openjdk-8-jdk openjdk-8-doc groovy wget \
+     gcc g++ unzip subversion gzip openjdk-11-jdk openjdk-11-doc groovy wget \
      zlib1g-dev gnuplot lynx maven \
      bzip2 libbz2-dev liblzma-dev libncurses5-dev libncursesw5-dev \
   && apt-get clean
@@ -26,7 +26,7 @@ RUN mkdir -p /opt/bin && cd /opt/bin \
   && rm -f /opt/jars/commons-math3-3.6.1-bin.tar.gz
   
 # google guava
-ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64/
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN cd /opt \
   && git clone https://github.com/google/guava.git \
   && cd guava/guava \
