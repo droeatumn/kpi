@@ -14,6 +14,7 @@
  * Requires
  *  guava.jar: https://github.com/google/guava
  *    http://google.github.io/guava/releases/19.0/api/docs/com/google/common/collect/Table.html
+ *    export CLASSPATH=$HOME/bin/guava/guava/target/guava-27.1-jre.jar:$CLASSPATH
  *
  * @author Dave Roe
  * @todo use numeric sorting for haplotypes in output
@@ -21,8 +22,8 @@
  */
 
 import groovy.io.*
-import groovy.util.CliBuilder.*
-import groovy.util.OptionAccessor
+import groovy.cli.commons.CliBuilder
+import groovy.cli.commons.OptionAccessor
 import com.google.common.collect.Table
 import com.google.common.collect.HashBasedTable
 
