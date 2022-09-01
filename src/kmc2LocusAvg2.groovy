@@ -28,8 +28,11 @@
  */
 
 import groovy.io.*
-import groovy.cli.commons.CliBuilder
-import groovy.cli.commons.OptionAccessor
+import org.apache.commons.cli.CliBuilder
+import org.apache.commons.cli.OptionAccessor
+# newer?
+#import groovy.cli.commons.CliBuilder
+#import groovy.cli.commons.OptionAccessor
 // http://apache.mirrors.pair.com//commons/math/binaries/commons-math3-3.6.1-bin.tar.gz
 // export CLASSPATH=$HOME/bin/jars/commons-math3-3.6.1/commons-math3-3.6.1.jar:$CLASSPATH
 import org.apache.commons.math3.stat.StatUtils
