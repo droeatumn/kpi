@@ -38,6 +38,10 @@ db2LocusFile = file("${home}/src/kmc2LocusAvg2.groovy")
 pa2HapsFile = file("${home}/src/pa2Haps.groovy")
 srcDir = pa2HapsFile.parent
 params.nocontainer = "null"
+// input file type for kmc
+// -f<a/q/m/bam/kmc> - input in FASTA format (-fa), FASTQ format (-fq), multi FASTA (-fm) or BAM (-fbam) or KMC(-fkmc); default: FASTQ
+params.filetype = "fq" // default to fq
+inFileType = params.filetype
 
 // things that probably won't change per run
 fileSeparator = "/"
@@ -64,7 +68,7 @@ if(params.map != null) {
 } else if(raw != null) {
     inOption = "-p"
     dOption = "-d " + params.id
-    kpiIn = Channel.fromPath(raw).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
+    kpiIn = Channel.fromPath(raw).ifEmpty { error "cannot find fastq/fastq/bam in $mapDir" }
 //        fqsIn = Channel.fromPath(mapDir).map{ file -> tuple(file.baseName, file) }.ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 //    fqsIn = Channel.fromPath(["${mapDir}*.fq", "${mapDir}*.fastq","${mapDir}*.fq.gz", "${mapDir}*.fastq.gz", "${mapDir}*.fa", "${mapDir}*.fasta","${mapDir}*.fa.gz", "${mapDir}*.fasta.gz"] ).ifEmpty { error "cannot find fastq/fastq in $mapDir" }
 }
@@ -97,7 +101,7 @@ process makeKmerDB {
 	script:
 	"""
     export JAVA_OPTS='-Xmx200g'
-    ./${makeKmerDBFile} ${dOption} ${inOption} ${f} ${logIn} -o . -w . 2> probeFastqsKMC.log
+    ./${makeKmerDBFile} ${dOption} ${inOption} ${f} -t ${inFileType} ${logIn} -o . -w . 2> probeFastqsKMC.log
     ./${queryDBFile} -d . -p ${markerDBPrefix} -o . -w . 2> filterMarkersKMC2.log		
     find . -type f -size 0 | xargs rm # remove 0 length files, especially hits.txt files
     """
