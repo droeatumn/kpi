@@ -26,7 +26,7 @@ RUN mkdir -p /opt/bin && cd /opt/bin \
 ENV SDKMAN_DIR $HOME/.sdkman
 RUN cd /tmp && wget https://get.sdkman.io && mv index.html sdkman-init.sh \
   && chmod 700 /tmp/sdkman-init.sh && /tmp/sdkman-init.sh \
-  && chmod 700 /.sdkman/bin/sdkman-init.sh 
+  && chmod 700 /.sdkman/bin/sdkman-init.sh \
   && echo "sdk install groovy" >> /.sdkman/bin/sdkman-init.sh
 RUN /.sdkman/bin/sdkman-init.sh
 #  && sdk install groovy
