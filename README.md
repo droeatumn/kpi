@@ -73,7 +73,7 @@ To run in a self-contained environment with the --id parameter. Replace 'inDir' 
 <code>docker run --rm -it -v inDir:/opt/kpi/raw/ -v outDir:/opt/kpi/output/ droeatumn/kpi:latest /opt/kpi/main.nf --id <output ID></code><br>
 Or<br>
 <code>docker run --rm -it -v $PWD/output:/opt/kpi/output droeatumn/kpi:latest /opt/kpi/main.nf --id ex1 --raw /opt/kpi/input/example1/</code><br>
-Or<br
+Or<br>
 <code>docker run --rm -it -v $PWD/output:/opt/kpi/output  droeatumn/kpi:latest /opt/kpi/main.nf --map /opt/kpi/input/example1/example1.txt</code><br>
 <br>
 <b>Citation</b><br>
