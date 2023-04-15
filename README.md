@@ -75,6 +75,8 @@ Or<br>
 <code>docker run --rm -it -v $PWD/output:/opt/kpi/output droeatumn/kpi:latest /opt/kpi/main.nf --id ex1 --raw /opt/kpi/input/example1/</code><br>
 Or<br>
 <code>docker run --rm -it -v $PWD/output:/opt/kpi/output  droeatumn/kpi:latest /opt/kpi/main.nf --map /opt/kpi/input/example1/example1.txt</code><br>
+Or, if your bam file (for one individual) is locally in ~/data<br>
+<code>docker run --rm -it -v ~/data/1000genomes/bam/chr19/:/opt/kpi/raw -v $PWD/output:/opt/kpi/output  droeatumn/kpi:latest /opt/kpi/main.nf --filetype fbam --id testid</code><br>
 <br>
 <b>Citation</b><br>
 Roe D, Kuang R. Accurate and Efficient KIR Gene and Haplotype Inference From Genome Sequencing Reads With Novel K-mer Signatures. Front Immunol (2020) 11:583013. (https://doi.org/10.3389/fimmu.2020.583013)
