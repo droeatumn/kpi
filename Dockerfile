@@ -21,21 +21,19 @@ RUN mkdir -p /opt/bin && cd /opt/bin \
   && tar -zxvf commons-math3-3.6.1-bin.tar.gz \
   && rm -f /opt/jars/commons-math3-3.6.1-bin.tar.gz 
 
-# install groovy with sdkman
-# https://stackoverflow.com/questions/53656537/install-sdkman-in-docker-image
-RUN mv /bin/sh /bin/sh.bak && ln -s /bin/bash /bin/sh
-ENV SDKMAN_DIR /usr/local/sdkman
-RUN set -x \
-    && apt-get update \
-    && apt-get install -y unzip --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
-RUN curl -s get.sdkman.io | bash \
- && chmod 700 /usr/local/sdkman/bin/sdkman-init.sh 
-RUN source "/usr/local/sdkman/bin/sdkman-init.sh" \
- && sdk install groovy  \
- && rm -f /bin/sh && mv /bin/sh.bak /bin/sh
-ENV GROOVY_HOME /usr/local/sdkman/candidates/groovy/current/
+# install groovy with sdkman, replacing curl with wget
+# http://groovy-lang.org/install.html#SDKMAN
+ENV SDKMAN_DIR $HOME/.sdkman
+RUN cd /tmp && wget https://get.sdkman.io && mv index.html sdkman-init.sh \
+  && chmod 700 /tmp/sdkman-init.sh && /tmp/sdkman-init.sh \
+  && chmod 700 /.sdkman/bin/sdkman-init.sh 
+  && echo "sdk install groovy" >> /.sdkman/bin/sdkman-init.sh
+RUN /.sdkman/bin/sdkman-init.sh
+#  && sdk install groovy
 
+# nextflow
+# until converted to dsl2 (todo)
+ENV NXF_VER 22.10.7
 RUN cd /opt/bin && wget -qO- http://get.nextflow.io | bash \
   && sed -i s/"curl -fsSL"/"curl -fsSLk"/ /opt/bin/nextflow \
   && chmod 755 /opt/bin/nextflow
