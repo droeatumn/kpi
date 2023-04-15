@@ -71,10 +71,10 @@ container other than the default (droeatumn/kpi:latest), use the --container par
 <br><br>
 To run in a self-contained environment with the --id parameter. Replace 'inDir' and 'outDir'.<br>
 <code>docker run --rm -it -v inDir:/opt/kpi/raw/ -v outDir:/opt/kpi/output/ droeatumn/kpi:latest /opt/kpi/main.nf --id <output ID></code><br>
-<br>
 Or<br>
 <code>docker run --rm -it -v $PWD/output:/opt/kpi/output droeatumn/kpi:latest /opt/kpi/main.nf --id ex1 --raw /opt/kpi/input/example1/</code><br>
-<br>
+Or<br
 <code>docker run --rm -it -v $PWD/output:/opt/kpi/output  droeatumn/kpi:latest /opt/kpi/main.nf --map /opt/kpi/input/example1/example1.txt</code><br>
+<br>
 <b>Citation</b><br>
 Roe D, Kuang R. Accurate and Efficient KIR Gene and Haplotype Inference From Genome Sequencing Reads With Novel K-mer Signatures. Front Immunol (2020) 11:583013. (https://doi.org/10.3389/fimmu.2020.583013)
