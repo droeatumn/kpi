@@ -23,13 +23,16 @@ RUN mkdir -p /opt/bin && cd /opt/bin \
 
 # install groovy with sdkman, replacing curl with wget
 # http://groovy-lang.org/install.html#SDKMAN
-ENV SDKMAN_DIR $HOME/.sdkman
+ENV SDKMAN_DIR /.sdkman
 RUN cd /tmp && wget https://get.sdkman.io && mv index.html sdkman-init.sh \
   && chmod 700 /tmp/sdkman-init.sh && /tmp/sdkman-init.sh \
   && chmod 700 /.sdkman/bin/sdkman-init.sh \
+  && cp /.sdkman/bin/sdkman-init.sh /.sdkman/bin/sdkman-init.sh.tmp \
   && echo "sdk install groovy" >> /.sdkman/bin/sdkman-init.sh
-RUN /.sdkman/bin/sdkman-init.sh
-#  && sdk install groovy
+# /root/.bashrc calls sdkman-init.sh, so don't want 'sdk install' there
+RUN /.sdkman/bin/sdkman-init.sh \
+  && mv /.sdkman/bin/sdkman-init.sh.tmp /.sdkman/bin/sdkman-init.sh
+ENV GROOVY_HOME /.sdkman/candidates/groovy/current
 
 # nextflow
 # until converted to dsl2 (todo)
