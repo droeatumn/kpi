@@ -41,7 +41,7 @@ In this example the path to files in idstoRaw.txt are somewhere under ~/input/.
 
 <b>Example using data in the image, so no input is required.</b><br>
 Example 1: cA01&tilde;tA01+cB01&tilde;tB01 with --raw.<br>
-Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes, so the haplotype predictions are very ambiguous. <br>
+Run the following command for an example of interpreting synthetic reads created from sequences with Genbank IDs KP420439 and KP420440 (https://www.ncbi.nlm.nih.gov/nuccore/KP420439 and https://www.ncbi.nlm.nih.gov/nuccore/KP420440)). These two haplotypes contain all the genes except KIR2DS5, so the haplotype predictions are very ambiguous. <br>
 
 <code>    ./main.nf --id ex1 --raw ~/git/kpi/input/example1 --output ~/output</code><br>
 <br>
